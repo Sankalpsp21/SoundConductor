@@ -1,0 +1,12 @@
+
+# Virtual environment
+# -- Go to README.md for setup info
+venv/
+
+# VGGish model and parameters
+# -- Go to README.md for setup info 
+vggish_model.ckpt
+vggish_pca_params.npz
+
+# VGGish testing scripts (liscense restrictions)
+vggish_smoke_test.py
