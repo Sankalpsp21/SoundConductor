@@ -1,0 +1,22 @@
+[
+  {
+    "action": "open door",
+    "signal": "whistle",
+    "rawdata": "something.wav"
+  },
+  {
+    "action": "open window",
+    "signal": "clap",
+    "rawdata": "something2.wav"
+  },
+  {
+    "action": "turn on light",
+    "signal": "clap twice",
+    "rawdata": "something.wav"
+  },
+  {
+    "action": "turn off light",
+    "signal": "clap twice",
+    "rawdata": "something333.wav"
+  }
+]
