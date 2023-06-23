@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const sampleData = require("../data/sample.json");
+const joi = require("joi");
 
 const db = mongoose.connection.useDb("AtlasMadness");
 
@@ -12,26 +13,20 @@ const audioActionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  rawdata: {
-    type: String,
-    required: true,
-    default: "something.wav",
-  },
 });
 
-module.exports = audioActionSchema;
+const audioActionValidSchema = joi.object({
+  action: joi.string().required(),
+  signal: joi.string().required(),
+});
 
 const AudioAction = db.model("AudioAction", audioActionSchema);
 
 // create a new audioaction
 const createAudioAction = async (body) => {
-  // sample data
-  const sampleBody = sampleData[3];
-
   const newAudioAction = {
-    action: sampleBody.action,
-    signal: sampleBody.signal,
-    rawdata: sampleBody.rawdata,
+    action: body.action,
+    signal: body.signal,
   };
 
   try {
@@ -50,7 +45,7 @@ const createAudioAction = async (body) => {
 // get all audioactions
 const readAudioActions = async () => {
   try {
-    const audioactions = await AudioAction.find();
+    const audioactions = await AudioAction.find({}).sort({ _id: 1 });
     console.log(
       `New audioaction Data is successfully returned ==: ${audioactions}`
     );
@@ -93,6 +88,9 @@ const readAudioActionsBySignal = async (signal) => {
 const updateAudioAction = async (body, id) => {
   try {
     const audioaction = await AudioAction.findById(id);
+    if (!audioaction) {
+      return false;
+    }
     audioaction.set(body);
     await audioaction.save();
     console.log(
@@ -118,6 +116,7 @@ const deleteAudioAction = async (id) => {
 };
 
 module.exports = {
+  audioActionValidSchema,
   createAudioAction,
   readAudioAction,
   readAudioActions,
