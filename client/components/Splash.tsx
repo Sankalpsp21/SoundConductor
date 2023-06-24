@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Heading, Text } from "native-base"
+import { Box, Center, Flex, Heading } from "native-base"
 
 export default function Splash() {
       return (

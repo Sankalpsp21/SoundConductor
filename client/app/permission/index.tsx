@@ -2,8 +2,8 @@ import { Audio } from 'expo-av';
 import { Box, Center, Flex, Heading, Text } from "native-base";
 import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { ArcPath } from '../landing';
 import { useRouter } from 'expo-router';
+import { ArcPath } from '../index';
 
 export default function () {
       

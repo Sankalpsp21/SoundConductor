@@ -1,27 +1,25 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { FontAwesome } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-import { Link, SplashScreen, Stack } from 'expo-router';
+import { SplashScreen, Stack } from 'expo-router';
 import { NativeBaseProvider, extendTheme } from "native-base";
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
-import Splash from '../components/Splash';
+import React, { useEffect } from 'react';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary
-} from 'expo-router';
+export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: 'landing/index',
+  initialRouteName: 'index',
 };
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [loaded, error] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    ...FontAwesome.font,
+  });
+
   const theme = extendTheme({
     colors: {
-      // Add new color
       primary: {
         50: '#E3F2F9',
         100: '#C5E4F3',
@@ -40,16 +38,10 @@ export default function RootLayout() {
       }
     },
     config: {
-      // Changing initialColorMode to 'dark'
       initialColorMode: 'dark',
     },
   });
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -57,8 +49,7 @@ export default function RootLayout() {
   return (
     <>
       <NativeBaseProvider theme={theme}>
-        {/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
-        {!loaded && <Splash />}
+        {!loaded && <SplashScreen />}
         {loaded && <RootLayoutNav />}
       </NativeBaseProvider>
     </>
@@ -66,23 +57,13 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
-
   return (
     <>
-
-      {/* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}> */}
-      {/* <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        </Stack> */}
-      <Stack>
-        <Stack.Screen name="landing/index" options={{ headerShown: false }} />
+      <Stack initialRouteName={unstable_settings.initialRouteName} >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="permission/index" options={{ headerShown: false }} />
         <Stack.Screen name="integrations/index" options={{ headerShown: false }} />
       </Stack>
-      {/* </ThemeProvider> */}
-
     </>
   );
 }
