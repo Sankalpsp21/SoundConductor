@@ -1,9 +1,11 @@
 import React from 'react'
 
-export default function Page() {
+const Auth = () => {
   return (
     <div>
       
     </div>
   )
 }
+
+export default Auth
