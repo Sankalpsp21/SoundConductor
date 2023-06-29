@@ -2,6 +2,6 @@ const { Router } = require("express");
 
 const router = Router();
 
-router.use("/audioactions", require("./audioactions"));
+router.use("/integrations", require("./integrations"));
 
 module.exports = router;

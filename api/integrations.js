@@ -1,22 +1,22 @@
 const { Router } = require("express");
 const {
-  audioActionValidSchema,
-  createAudioAction,
-  readAudioAction,
-  readAudioActions,
-  readAudioActionsBySignal,
-  updateAudioAction,
-  deleteAudioAction,
-} = require("../models/audioAction");
+  integrationValidSchema,
+  createIntegration,
+  readAllIntegrations,
+  readIntegrationById,
+  readIntegrationsBySignal,
+  updateIntegration,
+  deleteIntegration
+} = require("../models/Integrations.js");
 const { validateSchema } = require("../lib/validation");
 const router = Router();
 
 /*
-Get all audioactions data
+Get all integration data
 */
 router.get("/", async (req, res, next) => {
   try {
-    const result = await readAudioActions();
+    const result = await readAllIntegrations();
     res.status(200).send(result);
   } catch (err) {
     next();
@@ -24,7 +24,7 @@ router.get("/", async (req, res, next) => {
 });
 
 /*
-Get all audioactions data by signal
+Get all integrations data by signal
 */
 router.get("/:signal", async (req, res, next) => {
   const signal = req.params.signal;
@@ -35,7 +35,7 @@ router.get("/:signal", async (req, res, next) => {
   }
 
   try {
-    const result = await readAudioActionsBySignal(signal);
+    const result = await readIntegrationsBySignal(signal);
     res.status(200).send(result);
   } catch (err) {
     next();
@@ -43,18 +43,18 @@ router.get("/:signal", async (req, res, next) => {
 });
 
 /*
-Create a new audioaction data
+Create a new integration data
 */
 router.post("/", async (req, res, next) => {
   var body = null;
   try {
-    body = await audioActionValidSchema.validateAsync(req.body);
+    body = await integrationValidSchema.validateAsync(req.body);
   } catch (err) {
     res.status(400).send({ ERROR: "Invalid body" });
   }
 
   try {
-    const id = await createAudioAction(body);
+    const id = await createIntegration(body);
     res.status(201).send({ _id: id });
   } catch (err) {
     next();
@@ -62,7 +62,7 @@ router.post("/", async (req, res, next) => {
 });
 
 /*
-Edit the audioaction data by id
+Edit the integration data by id
 */
 router.patch("/:id", async (req, res, next) => {
   const id = req.params.id;
@@ -78,7 +78,7 @@ router.patch("/:id", async (req, res, next) => {
   }
 
   try {
-    const result = await updateAudioAction(req.body, id);
+    const result = await updateIntegration(req.body, id);
 
     if (result) {
       res.status(200).send({});
@@ -93,7 +93,7 @@ router.patch("/:id", async (req, res, next) => {
 });
 
 /*
-Delete the audioaction data by id
+Delete the integration data by id
 */
 router.delete("/:id", async (req, res, next) => {
   const id = req.params.id;
@@ -104,7 +104,7 @@ router.delete("/:id", async (req, res, next) => {
   }
 
   try {
-    const result = await deleteAudioAction(id);
+    const result = await deleteIntegration(id);
 
     if (result) {
       res.status(204).send({});
