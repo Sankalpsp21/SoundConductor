@@ -3,8 +3,23 @@
 ## Schema
 ```
 {
-    signal: STRING,
-    action: STRING
+	userId: ObjectID,              // _id from users collection
+	integrationName: STRING,
+	signal: STRING,              // e.g. doubleClap, singleClap
+	actions: {
+		smartthings: {
+			devices: [               // List of deviceID-action pairs e.g {1, ON}
+				{
+					deviceId: STRING,
+					action: STRING
+				},
+        {
+					deviceId: STRING,
+					action: STRING
+				}
+			]
+		}
+	}
 }
 ```
 
@@ -12,39 +27,65 @@
 
 ```
 {
-    signal: "double-clap",
-    action: "open-door"
+	"userId": "1",              
+	"integrationName": "shut blinds",
+	"signal": "clap",              
+	"actions": {
+		"smartthings": {
+			"devices": [               
+				{
+					"deviceId": "123",
+					"action": "OFF"
+				}
+			]
+		}
+	}
 }
 ```
 
 ## API Specification
 
 
-### ```GET /audioactions```
-**Description:** Fetch all audioaction data.
+### ```GET /integrations```
+**Description:** Fetch all integration data.
 
 
-### ```GET /audioactions/{id}```
-**Description:** Fetch a specific audioaction data by id.
+### ```GET /integrations/{id}```
+**Description:** Fetch a specific integration data by id.
 
 
-### ```GET /audioactions/{signal}```
-**Description:** Fetch a specific audioaction data by signal. (e.g. double-clap)
+### ```GET /integrations/{signal}```
+**Description:** Fetch specific integration data by signal. (e.g. double-clap)
 
 
-### ```POST /audioactions```
-**Description:** Create a new audioaction data to the database. The request body should be like this:
+### ```POST /integrations```
+**Description:** Create new integration data to the database. The request body should be like this:
 ```
 {
-   signal: STRING,
-   action: STRING
+	userId: ObjectID,              // _id from users collection
+	integrationName: STRING,
+	signal: STRING,              // e.g. doubleClap, singleClap
+	actions: {
+		smartthings: {
+			devices: [               // List of deviceID-action pairs e.g {1, ON}
+				{
+					deviceId: STRING,
+					action: STRING
+				},
+        {
+					deviceId: STRING,
+					action: STRING
+				}
+			]
+		}
+	}
 }
 ```
 
 
-### ```PATCH /audioactions/{id}```
-**Description:** Update specific audioaction data.
+### ```PATCH /integrations/{id}```
+**Description:** Update specific integration data.
 
 
-### ```DELETE /audioactions/{id}```
-**Description:** Delete specific audioaction data.
+### ```DELETE /integrations/{id}```
+**Description:** Delete specific integration data.
