@@ -1,40 +1,40 @@
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { SplashScreen, useRouter } from 'expo-router';
 import { Avatar, Box, HStack, Icon, Pressable, Spacer, Text, VStack } from 'native-base';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 type Item = {
-      id: string;
+      id: number;
       integrationName: string;
       [key: string]: any;
 };
 
 const data: Item[] = [
       {
-            id: '0',
+            id: 0,
             integrationName: 'Open Tesla Tank',
       },
       {
-            id: '1',
+            id: 1,
             integrationName: 'Garage Door Opener',
       },
       {
-            id: '2',
+            id: 2,
             integrationName: 'Car Locker',
       },
       {
-            id: '3',
+            id: 3,
             integrationName: 'Turn On Computer',
       },
 ];
 
 
-function Basic() {
+function ListView() {
 
-      const [listData, setListData] = useState(data);
       const router = useRouter();
+      const [listData, setListData] = useState(data);
 
       const closeRow = (rowMap: { [x: string]: { closeRow: () => void; }; }, rowKey: string | number) => {
             if (rowMap[rowKey]) {
@@ -54,29 +54,30 @@ function Basic() {
             console.log('This row opened', rowKey);
       };
 
-      const renderItem = ({
-            item,
-            index
-      }:
-            {
-                  item: any;
-                  index: any;
-            }
-      ) => <Box bg="bg.shade">
-                  <Pressable borderBottomWidth={"1"}>
-                        <TouchableOpacity style={{ flex: 1, paddingLeft: 4, paddingRight: 5, paddingVertical: 6 }} onPress={() => router.push(`/integrations/${item.id}`)}>
-                              {/* pl="4" pr="5" py="6"> */}
-                              <HStack alignItems="center" space={3}>
-                                    <Avatar bg="coolGray.500" size="48px" />
-                                    <VStack>
-                                          <Text color="white" fontSize="md" bold>{item.integrationName}</Text>
-                                    </VStack>
-                                    <Spacer />
-                              </HStack>
-                        </TouchableOpacity>
+      const renderItem = ({ item, index }: { item: any; index: any; }
+      ) => {
+            return (
+                  <Box bg="bg.shade">
+                        <Pressable borderBottomWidth={"1"}>
+                              <TouchableOpacity style={{ flex: 1, paddingLeft: 4, paddingRight: 5, paddingVertical: 6 }} onPress={() => {
+                                    console.log(item.id)
+                                    router.push(`/integrations/${item.id}`)
+                              }}>
+                                    {/* pl="4" pr="5" py="6"> */}
+                                    <HStack alignItems="center" space={3}>
+                                          <Avatar bg="coolGray.500" size="48px" />
+                                          <VStack>
+                                                <Text color="white" fontSize="md" bold>{item.integrationName}</Text>
+                                          </VStack>
+                                          <Spacer />
+                                    </HStack>
+                              </TouchableOpacity>
 
-                  </Pressable>
-            </Box>;
+                        </Pressable>
+                  </Box>
+            );
+      };
+
 
       const renderHiddenItem = (data: any, rowMap: any) => {
             return (
@@ -105,13 +106,19 @@ function Basic() {
             );
       };
 
-      return <Box bg="bg.shadeDark" flex="1">
-            <SwipeListView data={listData} renderItem={renderItem} renderHiddenItem={renderHiddenItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
-      </Box>;
+     
+
+      return (
+            <Box bg="bg.shadeDark" flex="1">
+                  <SwipeListView data={listData} renderItem={renderItem} renderHiddenItem={renderHiddenItem} rightOpenValue={-130} previewRowKey={'0'} previewOpenValue={-40} previewOpenDelay={3000} onRowDidOpen={onRowDidOpen} />
+            </Box>
+      );
 }
 
-export default function Swiped() {
+export default function IntegrationList() {
       return (
-            <Basic />
-      );
-};
+            <Box bg="bg.shade" height="100%" width="100%">
+                  <ListView />
+            </Box>
+      )
+}
