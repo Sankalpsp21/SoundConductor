@@ -243,11 +243,11 @@
 ### `POST /integrations/execute/{token} - In progress`
 
 1. Get’s called after ML model classifies sound
-2. Looks up all user integrations that match given input classification
+2. Looks up all user integrations that match given signal classification
 3. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
 
 ```
 {
-	input: STRING
+	signal: STRING
 }
 ```
