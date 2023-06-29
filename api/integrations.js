@@ -33,6 +33,10 @@ router.get("/:id", async (req, res, next) => {
 
   try {
     const result = await readIntegrationById(id);
+    if (!result) {
+      res.status(404).send({ Error: `id(${id}) does not exist` });
+      return;
+    }
     res.status(200).send(result);
   } catch (err) {
     next();
@@ -88,7 +92,7 @@ router.patch("/:id", async (req, res, next) => {
       res.status(200).send({});
       return;
     } else {
-      res.status(400).send({ Error: "Failed to update the data" });
+      res.status(404).send({ Error: `id(${id}) does not exist` });
       return;
     }
   } catch (err) {
@@ -114,7 +118,7 @@ router.delete("/:id", async (req, res, next) => {
       res.status(204).send({});
       return;
     } else {
-      res.status(400).send({ Error: "Failed to delete the data" });
+      res.status(404).send({ Error: `id(${id}) does not exist` });
       return;
     }
   } catch (err) {

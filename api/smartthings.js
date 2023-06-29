@@ -12,6 +12,7 @@ router.post("/token", async (req, res, next) => {
     body = await userValidSchema.validateAsync(req.body);
   } catch (err) {
     res.status(400).send({ ERROR: "Invalid body" });
+    return;
   }
 
   try {

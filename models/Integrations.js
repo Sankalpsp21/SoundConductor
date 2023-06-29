@@ -83,7 +83,6 @@ const readIntegrationById = async (id) => {
     );
     return integration;
   } catch (err) {
-    console.error(" == error:", err);
     return null;
   }
 };
