@@ -24,7 +24,7 @@ mongoose
     console.log(`Database Connection Failed: ${err}`);
   })
   .finally(() => {
-    mongoose.connection.useDb("sample");
+    mongoose.connection.useDb("AtlasMadness");
     app.listen(PORT, () => {
       console.log("== Server is running on port ", PORT);
     });
@@ -46,3 +46,5 @@ app.use("*", function (err, req, res, next) {
     err: "Server error.  Please try again later.",
   });
 });
+
+//exports.atlasmadness = app;

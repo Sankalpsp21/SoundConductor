@@ -1,21 +1,36 @@
 # AtlasMadness
 
 ## Schema
+
+### Users Collection
+
+#### This collection stores user's tokens.
+
 ```
 {
-	userId: ObjectID,              // _id from users collection
+	token: STRING
+}
+```
+
+### Integrations Collection
+
+#### This collection stores integration data.
+
+```
+{
+	userId: ObjectID,              	// _id from users collection
 	integrationName: STRING,
-	signal: STRING,              // e.g. doubleClap, singleClap
+	signal: STRING,              	// e.g. doubleClap, singleClap
 	actions: {
 		smartthings: {
-			devices: [               // List of deviceID-action pairs e.g {1, ON}
+			devices: [              // List of deviceID-action pairs e.g {1, ON}
 				{
 					deviceId: STRING,
-					action: STRING
+					state: STRING
 				},
-        {
+        		{
 					deviceId: STRING,
-					action: STRING
+					state: STRING
 				}
 			]
 		}
@@ -27,15 +42,15 @@
 
 ```
 {
-	"userId": "1",              
+	"userId": "1",
 	"integrationName": "shut blinds",
-	"signal": "clap",              
+	"signal": "singleClap",
 	"actions": {
 		"smartthings": {
-			"devices": [               
+			"devices": [
 				{
 					"deviceId": "123",
-					"action": "OFF"
+					"state": "OFF"
 				}
 			]
 		}
@@ -45,21 +60,40 @@
 
 ## API Specification
 
+### `POST /smartthings/token`
 
-### ```GET /integrations```
+**Description:** Create new user data with a given token.
+**Request Body**
+
+```
+{
+	token: STRING, required
+}
+```
+
+**Response**
+
+| Status Code | Description  |
+| ----------- | ------------ |
+| 201         | Success      |
+| 400         | Invalid Body |
+
+### `GET /integrations`
+
 **Description:** Fetch all integration data.
 
+### `GET /integrations/{id}`
 
-### ```GET /integrations/{id}```
 **Description:** Fetch a specific integration data by id.
 
+### `GET /integrations/{signal}`
 
-### ```GET /integrations/{signal}```
 **Description:** Fetch specific integration data by signal. (e.g. double-clap)
 
+### `POST /integrations`
 
-### ```POST /integrations```
 **Description:** Create new integration data to the database. The request body should be like this:
+
 ```
 {
 	userId: ObjectID,              // _id from users collection
@@ -82,10 +116,10 @@
 }
 ```
 
+### `PATCH /integrations/{id}`
 
-### ```PATCH /integrations/{id}```
 **Description:** Update specific integration data.
 
+### `DELETE /integrations/{id}`
 
-### ```DELETE /integrations/{id}```
 **Description:** Delete specific integration data.

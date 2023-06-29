@@ -1,4 +1,6 @@
 const { Router } = require("express");
+const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Types;
 const {
   integrationValidSchema,
   createIntegration,
@@ -6,9 +8,9 @@ const {
   readIntegrationById,
   readIntegrationsBySignal,
   updateIntegration,
-  deleteIntegration
+  deleteIntegration,
 } = require("../models/Integrations.js");
-const { validateSchema } = require("../lib/validation");
+const { updateSmartThingsDeviceState } = require("../lib/smartthings.js");
 const router = Router();
 
 /*
@@ -24,18 +26,13 @@ router.get("/", async (req, res, next) => {
 });
 
 /*
-Get all integrations data by signal
+Get all integrations data by id
 */
-router.get("/:signal", async (req, res, next) => {
-  const signal = req.params.signal;
-
-  if (!signal) {
-    res.status(400).send({ Error: "You need to pass a signal for query" });
-    return;
-  }
+router.get("/:id", async (req, res, next) => {
+  const id = req.params.id;
 
   try {
-    const result = await readIntegrationsBySignal(signal);
+    const result = await readIntegrationById(id);
     res.status(200).send(result);
   } catch (err) {
     next();
@@ -51,6 +48,13 @@ router.post("/", async (req, res, next) => {
     body = await integrationValidSchema.validateAsync(req.body);
   } catch (err) {
     res.status(400).send({ ERROR: "Invalid body" });
+    return;
+  }
+
+  // Check if userId's type is ObjectId
+  if (!ObjectId.isValid(req.body.userId)) {
+    res.status(400).send({ ERROR: "Invalid body" });
+    return;
   }
 
   try {
@@ -116,6 +120,45 @@ router.delete("/:id", async (req, res, next) => {
   } catch (err) {
     next();
   }
+});
+
+router.post("/execute/:token", async (req, res, next) => {
+  const signal = req.body.signal;
+
+  if (!signal) {
+    res.status(400).send({
+      Error: "You need to pass a signal to execute your preferred actions",
+    });
+    return;
+  }
+
+  const token = req.params.token;
+  var devices = null;
+
+  try {
+    // ※※※ TO DO:
+    // 1. readIntegrationBySignal function should be updated.
+    // : This function should only return the array of devices by signal to use updateSmartThingsDeviceState function.
+
+    // updateSmartThingsDeviceState(bearerToken, deviceId, state)
+    // You can see the details of this function in lib/smartthings.js
+
+    devices = readIntegrationsBySignal(signal);
+
+    // If there is no device, then just return status 200
+    if (devices.length === 0) {
+      res.status(200).send({ Message: "No device is found" });
+      return;
+    }
+
+    // 2. I think once readIntegrationBySignal function is updated,
+    // then the only thing we need to do is call updateSmartThingsDeviceState function to update our devices' status
+  } catch (err) {
+    // Some error handlings...
+  }
+  // ※※※ This is from our notion page by Alex
+  // 1. Looks up all user integrations that match given signal classification (e.g. singleClap)
+  // 2. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
 });
 
 module.exports = router;

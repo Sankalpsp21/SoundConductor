@@ -1,56 +1,40 @@
 const mongoose = require("mongoose");
-const sampleData = require("../data/sample.json");
+const { ObjectId } = mongoose.Types;
 const joi = require("joi");
 
 const db = mongoose.connection.useDb("AtlasMadness");
 
 const integrationsSchema = new mongoose.Schema({
-    userId: {
-      type: String,
-      required: true
+  userId: { type: ObjectId, required: true },
+  integrationName: { type: String, required: true },
+  signal: { type: String, required: true },
+  actions: {
+    smartthings: {
+      devices: [
+        {
+          deviceId: { type: String, required: true },
+          state: { type: String, required: true },
+        },
+      ],
     },
-    integrationName: {
-      type: String,
-      required: true
-    },
-    signal: {
-      type: String,
-      required: true
-    },
-    actions: {
-      smartthings: {
-        devices: [
-          {
-            deviceId: {
-              type: String,
-              required: true
-            },
-            action: {
-              type: String,
-              required: true
-            }
-          }
-        ]
-      }
-    }
-  });
+  },
+});
 
-
-  const integrationValidSchema = joi.object({
-    userId: joi.string().required(),
-    integrationName: joi.string().required(),
-    signal: joi.string().required(),
-    actions: joi.object({
-      smartthings: joi.object({
-        devices: joi.array().items(
-          joi.object({
-            deviceId: joi.string().required(),
-            action: joi.string().required()
-          })
-        )
-      })
-    })
-  });
+const integrationValidSchema = joi.object({
+  userId: joi.required(),
+  integrationName: joi.string().required(),
+  signal: joi.string().required(),
+  actions: joi.object({
+    smartthings: joi.object({
+      devices: joi.array().items(
+        joi.object({
+          deviceId: joi.string().required(),
+          state: joi.string().required(),
+        })
+      ),
+    }),
+  }),
+});
 
 const Integration = db.model("Integrations", integrationsSchema);
 
@@ -60,7 +44,7 @@ const createIntegration = async (body) => {
     userId: body.userId,
     integrationName: body.integrationName,
     signal: body.signal,
-    actions: body.actions
+    state: body.state,
   };
 
   try {
@@ -156,5 +140,5 @@ module.exports = {
   readIntegrationById,
   readIntegrationsBySignal,
   updateIntegration,
-  deleteIntegration
+  deleteIntegration,
 };
