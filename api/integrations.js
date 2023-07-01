@@ -9,8 +9,8 @@ const {
   readIntegrationsBySignal,
   updateIntegration,
   deleteIntegration,
+  executeIntegrations,
 } = require("../models/Integrations.js");
-const { updateSmartThingsDeviceState } = require("../lib/smartthings.js");
 const router = Router();
 
 /*
@@ -65,6 +65,34 @@ router.post("/", async (req, res, next) => {
     const id = await createIntegration(body);
     res.status(201).send({ _id: id });
   } catch (err) {
+    next();
+  }
+});
+
+
+/*
+Execute an integration by signal
+*/
+router.post("integrations/execute", async (req, res, next) => {
+  signal = req.body.signal;
+
+  if (!signal) {
+    res.status(400).send({ Error: "You need to pass an signal to execute" });
+    return;
+  }
+
+  try{
+    const result = await executeIntegration(signal);
+
+    if(result) {
+      res.status(200).send({});
+      return;
+    } else {
+      res.status(404).send({ Error: `signal(${signal}) does not exist` });
+      return;
+    }
+
+  }catch(err){
     next();
   }
 });
@@ -126,8 +154,12 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
+
+// 1. Looks up all user integrations that match given signal classification (e.g. singleClap)
+// 2. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
 router.post("/execute/:token", async (req, res, next) => {
   const signal = req.body.signal;
+  const bearerToken = req.params.token;
 
   if (!signal) {
     res.status(400).send({
@@ -136,16 +168,16 @@ router.post("/execute/:token", async (req, res, next) => {
     return;
   }
 
-  const token = req.params.token;
+  if (!bearerToken) {
+    res.status(400).send({
+      Error: "You need to pass a bearer token to execute your preferred actions",
+    });
+    return;
+  }
+
   var devices = null;
 
   try {
-    // ※※※ TO DO:
-    // 1. readIntegrationBySignal function should be updated.
-    // : This function should only return the array of devices by signal to use updateSmartThingsDeviceState function.
-
-    // updateSmartThingsDeviceState(bearerToken, deviceId, state)
-    // You can see the details of this function in lib/smartthings.js
 
     devices = readIntegrationsBySignal(signal);
 
@@ -155,14 +187,12 @@ router.post("/execute/:token", async (req, res, next) => {
       return;
     }
 
-    // 2. I think once readIntegrationBySignal function is updated,
-    // then the only thing we need to do is call updateSmartThingsDeviceState function to update our devices' status
+    // If there is a device, then execute the integration
+    executionResult = executeIntegrations(signal, token);
+
   } catch (err) {
-    // Some error handlings...
+    next();
   }
-  // ※※※ This is from our notion page by Alex
-  // 1. Looks up all user integrations that match given signal classification (e.g. singleClap)
-  // 2. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
 });
 
 module.exports = router;

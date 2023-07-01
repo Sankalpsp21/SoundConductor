@@ -3,6 +3,7 @@ const { ObjectId } = mongoose.Types;
 const joi = require("joi");
 
 const db = mongoose.connection.useDb("AtlasMadness");
+const { updateSmartThingsDeviceState } = require("../lib/smartthings.js");
 
 const integrationsSchema = new mongoose.Schema({
   userId: { type: ObjectId, required: true },
@@ -132,6 +133,29 @@ const deleteIntegration = async (id) => {
   }
 };
 
+// executes all integrations associated with a signal
+const executeIntegrations = async (signal, token) => {
+  try {
+
+    await Integration.find({ signal: signal }).then((integrations) => {
+      integrations.forEach((integration) => {
+        integration.actions.smartthings.devices.forEach((device) => {
+          updateSmartThingsDeviceState(token, device.deviceId, device.state);
+        });
+      });
+    });
+
+    console.log(`Integration is successfully executed ==`);
+    return true;
+
+  } catch (err) {
+    console.error(" == error:", err);
+    return false;
+  }
+};
+
+
+
 module.exports = {
   integrationValidSchema,
   createIntegration,
@@ -140,4 +164,5 @@ module.exports = {
   readIntegrationsBySignal,
   updateIntegration,
   deleteIntegration,
+  executeIntegrations,
 };
