@@ -136,16 +136,18 @@ const deleteIntegration = async (id) => {
 // executes all integrations associated with a signal
 const executeIntegrations = async (signal, token) => {
   try {
+    const promises = [];
 
     await Integration.find({ signal: signal }).then((integrations) => {
       integrations.forEach((integration) => {
         integration.actions.smartthings.devices.forEach((device) => {
-          updateSmartThingsDeviceState(token, device.deviceId, device.state);
+          promises.push(updateSmartThingsDeviceState(token, device.deviceId, device.state.toLowerCase()));
         });
       });
     });
 
-    console.log(`Integration is successfully executed ==`);
+    const results = await Promise.all(promises);
+
     return true;
 
   } catch (err) {

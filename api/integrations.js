@@ -161,6 +161,11 @@ router.post("/execute/:token", async (req, res, next) => {
   const signal = req.body.signal;
   const bearerToken = req.params.token;
 
+  //TODO: Lookg up token based off the user ID which will be passed in.
+
+  console.log("signal: " + signal)
+  console.log("bearerToken: " + bearerToken)
+
   if (!signal) {
     res.status(400).send({
       Error: "You need to pass a signal to execute your preferred actions",
@@ -179,7 +184,8 @@ router.post("/execute/:token", async (req, res, next) => {
 
   try {
 
-    devices = readIntegrationsBySignal(signal);
+    devices = await readIntegrationsBySignal(signal);
+
 
     // If there is no device, then just return status 200
     if (devices.length === 0) {
@@ -188,7 +194,18 @@ router.post("/execute/:token", async (req, res, next) => {
     }
 
     // If there is a device, then execute the integration
-    executionResult = executeIntegrations(signal, token);
+
+    const executionResult = await executeIntegrations(signal, bearerToken);
+
+
+    if(executionResult){
+      res.status(200).send({ Message: "Integration is successfully executed" });
+      return;
+
+    }else{
+      res.status(400).send({ Error: "Integration is not successfully executed" });
+      return;
+    }
 
   } catch (err) {
     next();
