@@ -18,7 +18,7 @@ const Navbar = ({ activeTab, handleTabClick }: { activeTab: string, handleTabCli
 
       return (
             <>
-                  <div className="navbar bg-base-100">
+                  <div className="navbar bg-base-200">
                         <div className="navbar-start">
                               <a className="btn btn-ghost normal-case text-xl"
                                     onClick={() => {
@@ -29,7 +29,7 @@ const Navbar = ({ activeTab, handleTabClick }: { activeTab: string, handleTabCli
                         </div>
                         <div className="navbar-center hidden lg:flex">
                               <ul className="menu menu-horizontal px-1">
-                                    <div className="tabs tabs-boxed">
+                                    <div className="tabs tabs-boxed bg-base-300">
                                           <a
                                                 className={classNames('tab', { 'tab-active': activeTab === 'Your Integrations' })}
                                                 onClick={() => handleTabClick('Your Integrations')}
