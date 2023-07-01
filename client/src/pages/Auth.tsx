@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom"
+
 const Auth = () => {
+  const navigate = useNavigate()
   return (
     <>
-      <div className="hero min-h-screen bg-base-200">
+      <div className="hero min-h-screen">
         <div className="hero-content flex-col lg:flex-row-reverse p-48">
           <div className="text-center lg:text-left m-12">
             <h1 className="text-5xl font-bold">Begin Your Journey with SoundConductor</h1>
@@ -16,7 +19,11 @@ const Auth = () => {
                 <input type="text" placeholder="Enter Your Token Here" className="input input-bordered" />
               </div>
               <div className="form-control mt-6">
-                <button className="btn btn-primary">Enter SoundConductor</button>
+                <button className="btn btn-primary"
+                  onClick={() => {
+                    navigate('/home')
+                  }}
+                >Enter SoundConductor</button>
               </div>
             </div>
           </div>
