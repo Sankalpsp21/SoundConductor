@@ -40,8 +40,19 @@ const readUserByToken = async (token) => {
   }
 };
 
+const getUserByToken = async (token) => {
+  try {
+    const user = await User.findOne({ token: token });
+    return user;
+  } catch (err) {
+    console.error(" == error:", err);
+    return null;
+  }
+};
+
 module.exports = {
   userValidSchema,
   createUser,
   readUserByToken,
+  getUserByToken,
 };

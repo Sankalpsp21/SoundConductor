@@ -154,6 +154,7 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
+//passing token but wants to usee the userid ot get the token
 
 // 1. Looks up all user integrations that match given signal classification (e.g. singleClap)
 // 2. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
