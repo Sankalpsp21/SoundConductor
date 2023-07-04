@@ -1,7 +1,5 @@
 # SoundConductor
 
-# LET'S GET WORKKKK!!!!!!!!!!!!!!!!!!!!!!!!
-
 ## Schema
 
 ### Users Collection
@@ -61,6 +59,18 @@
 ```
 
 ## API Specification
+
+### `GET /users/{userId}`
+
+**Description:** Fetch a specific user data by userId.
+
+**Status Code Table**
+
+| Status Code | Description           |
+| ----------- | --------------------- |
+| 200         | Success               |
+| 404         | Not found             |
+| 500         | Internal Server error |
 
 ### `POST /smartthings/token`
 
