@@ -11,6 +11,8 @@ const {
   deleteIntegration,
   executeIntegrations,
 } = require("../models/Integrations.js");
+
+const { readUserById } = require("../models/user.js");
 const router = Router();
 
 /*
@@ -69,7 +71,6 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-
 /*
 Execute an integration by signal
 */
@@ -81,18 +82,17 @@ router.post("integrations/execute", async (req, res, next) => {
     return;
   }
 
-  try{
-    const result = await executeIntegration(signal);
+  try {
+    const result = await executeIntegrations(signal);
 
-    if(result) {
+    if (result) {
       res.status(200).send({});
       return;
     } else {
       res.status(404).send({ Error: `signal(${signal}) does not exist` });
       return;
     }
-
-  }catch(err){
+  } catch (err) {
     next();
   }
 });
@@ -158,14 +158,10 @@ router.delete("/:id", async (req, res, next) => {
 
 // 1. Looks up all user integrations that match given signal classification (e.g. singleClap)
 // 2. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
-router.post("/execute/:token", async (req, res, next) => {
+router.post("/:userId/execute", async (req, res, next) => {
+  const userId = req.params.userId;
   const signal = req.body.signal;
-  const bearerToken = req.params.token;
-
-  //TODO: Lookg up token based off the user ID which will be passed in.
-
-  console.log("signal: " + signal)
-  console.log("bearerToken: " + bearerToken)
+  var user = null;
 
   if (!signal) {
     res.status(400).send({
@@ -174,19 +170,24 @@ router.post("/execute/:token", async (req, res, next) => {
     return;
   }
 
-  if (!bearerToken) {
-    res.status(400).send({
-      Error: "You need to pass a bearer token to execute your preferred actions",
-    });
+  // Find a user with a given userId and get the token
+  try {
+    user = await readUserById(userId);
+
+    if (!user) {
+      res.status(404).send({ Error: "Cannot find the user" });
+      return;
+    }
+  } catch (err) {
+    res.status(404).send({ Error: "Cannot find the user" });
     return;
   }
 
+  const token = user.token;
   var devices = null;
 
   try {
-
     devices = await readIntegrationsBySignal(signal);
-
 
     // If there is no device, then just return status 200
     if (devices.length === 0) {
@@ -196,18 +197,17 @@ router.post("/execute/:token", async (req, res, next) => {
 
     // If there is a device, then execute the integration
 
-    const executionResult = await executeIntegrations(signal, bearerToken);
+    const executionResult = await executeIntegrations(signal, token);
 
-
-    if(executionResult){
+    if (executionResult) {
       res.status(200).send({ Message: "Integration is successfully executed" });
       return;
-
-    }else{
-      res.status(400).send({ Error: "Integration is not successfully executed" });
+    } else {
+      res
+        .status(400)
+        .send({ Error: "Integration is not successfully executed" });
       return;
     }
-
   } catch (err) {
     next();
   }

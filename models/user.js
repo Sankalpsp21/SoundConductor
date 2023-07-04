@@ -25,27 +25,24 @@ const createUser = async (body) => {
     console.log(`New user Data is successfully saved ==: ${newUser._id}`);
     return newUser._id;
   } catch (err) {
-    console.error(" == error:", err);
+    return null;
+  }
+};
+
+const readUserById = async (id) => {
+  try {
+    const user = await User.findById(id);
+    return user;
+  } catch (err) {
     return null;
   }
 };
 
 const readUserByToken = async (token) => {
   try {
-    const users = await User.find({ token: token });
-    return users;
-  } catch (err) {
-    console.error(" == error:", err);
-    return null;
-  }
-};
-
-const getUserByToken = async (token) => {
-  try {
     const user = await User.findOne({ token: token });
     return user;
   } catch (err) {
-    console.error(" == error:", err);
     return null;
   }
 };
@@ -53,6 +50,6 @@ const getUserByToken = async (token) => {
 module.exports = {
   userValidSchema,
   createUser,
+  readUserById,
   readUserByToken,
-  getUserByToken,
 };
