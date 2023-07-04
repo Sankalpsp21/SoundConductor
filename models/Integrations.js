@@ -41,6 +41,7 @@ const Integration = db.model("Integrations", integrationsSchema);
 
 // create a new integration
 const createIntegration = async (body) => {
+
   const newIntegration = {
     userId: body.userId,
     integrationName: body.integrationName,
