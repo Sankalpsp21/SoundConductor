@@ -1,0 +1,7 @@
+version: '3'
+services:
+    scheduler:
+        build: .
+        image: sound-conductor
+        ports:
+            - '80:80'
