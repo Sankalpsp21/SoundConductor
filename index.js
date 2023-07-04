@@ -25,9 +25,11 @@ mongoose
   })
   .finally(() => {
     mongoose.connection.useDb("AtlasMadness");
+    // This code should not exist for deploying this as Google Cloud Functions
+    /*
     app.listen(PORT, () => {
       console.log("== Server is running on port ", PORT);
-    });
+    });*/
   });
 
 app.use("*", function (req, res, next) {
