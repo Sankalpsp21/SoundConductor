@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Types;
 const {
   integrationValidSchema,
   createIntegration,
-  readAllIntegrations,
+  readAllIntegrationsByUserId,
   readIntegrationById,
   readIntegrationsBySignal,
   updateIntegration,
@@ -18,9 +18,10 @@ const router = Router();
 /*
 Get all integration data
 */
-router.get("/", async (req, res, next) => {
+router.get("/:userId", async (req, res, next) => {
+  const userId = req.params.userId;
   try {
-    const result = await readAllIntegrations();
+    const result = await readAllIntegrationsByUserId(userId);
     res.status(200).send(result);
   } catch (err) {
     next();
@@ -67,32 +68,6 @@ router.post("/", async (req, res, next) => {
   try {
     const id = await createIntegration(body);
     res.status(201).send({ _id: id });
-  } catch (err) {
-    next();
-  }
-});
-
-/*
-Execute an integration by signal
-*/
-router.post("integrations/execute", async (req, res, next) => {
-  signal = req.body.signal;
-
-  if (!signal) {
-    res.status(400).send({ Error: "You need to pass an signal to execute" });
-    return;
-  }
-
-  try {
-    const result = await executeIntegrations(signal);
-
-    if (result) {
-      res.status(200).send({});
-      return;
-    } else {
-      res.status(404).send({ Error: `signal(${signal}) does not exist` });
-      return;
-    }
   } catch (err) {
     next();
   }

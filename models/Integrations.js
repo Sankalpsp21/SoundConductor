@@ -41,7 +41,6 @@ const Integration = db.model("Integrations", integrationsSchema);
 
 // create a new integration
 const createIntegration = async (body) => {
-
   const newIntegration = {
     userId: body.userId,
     integrationName: body.integrationName,
@@ -66,6 +65,19 @@ const createIntegration = async (body) => {
 const readAllIntegrations = async () => {
   try {
     const integrations = await Integration.find({}).sort({ _id: 1 });
+    console.log(
+      `New integrations Data is successfully returned ==: ${integrations}`
+    );
+    return integrations;
+  } catch (err) {
+    console.error(" == error:", err);
+    return null;
+  }
+};
+
+const readAllIntegrationsByUserId = async (userId) => {
+  try {
+    const integrations = await Integration.find({ userId: userId });
     console.log(
       `New integrations Data is successfully returned ==: ${integrations}`
     );
@@ -142,7 +154,13 @@ const executeIntegrations = async (signal, token) => {
     await Integration.find({ signal: signal }).then((integrations) => {
       integrations.forEach((integration) => {
         integration.actions.smartthings.devices.forEach((device) => {
-          promises.push(updateSmartThingsDeviceState(token, device.deviceId, device.state.toLowerCase()));
+          promises.push(
+            updateSmartThingsDeviceState(
+              token,
+              device.deviceId,
+              device.state.toLowerCase()
+            )
+          );
         });
       });
     });
@@ -150,19 +168,17 @@ const executeIntegrations = async (signal, token) => {
     const results = await Promise.all(promises);
 
     return true;
-
   } catch (err) {
     console.error(" == error:", err);
     return false;
   }
 };
 
-
-
 module.exports = {
   integrationValidSchema,
   createIntegration,
   readAllIntegrations,
+  readAllIntegrationsByUserId,
   readIntegrationById,
   readIntegrationsBySignal,
   updateIntegration,
