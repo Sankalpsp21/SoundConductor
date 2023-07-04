@@ -16,7 +16,7 @@ const { readUserById } = require("../models/user.js");
 const router = Router();
 
 /*
-Get all integration data -- DONE ------------------------------------------------------------------------------------------------------------------------
+Get all integration data
 */
 router.get("/", async (req, res, next) => {
   try {
@@ -28,7 +28,7 @@ router.get("/", async (req, res, next) => {
 });
 
 /*
-Get a specific integration's data by its objectId --- DONE ------------------------------------------------------------------------------------------------------------------------
+Get a specific integration's data by its objectId
 */
 router.get("/:id", async (req, res, next) => {
   const objectId = req.params.id;
@@ -47,7 +47,7 @@ router.get("/:id", async (req, res, next) => {
 
 /*
 Experiencing error with objectId validation
-Create a new integration data ------------------------------------------------------------------------------------------------------------------------
+Create a new integration data 
 */
 router.post("/", async (req, res, next) => {
   var body = null;
@@ -99,7 +99,7 @@ router.post("integrations/execute", async (req, res, next) => {
 });
 
 /*
-Edit a specific integration's data by id -- DONE ------------------------------------------------------------------------------------------------------------------------
+Edit a specific integration's data by id
 */
 router.patch("/:id", async (req, res, next) => {
   const id = req.params.id;
@@ -130,7 +130,7 @@ router.patch("/:id", async (req, res, next) => {
 });
 
 /*
-Delete a specific integration by id -- DONE------------------------------------------------------------------------------------------------------------------------
+Delete a specific integration by id
 */
 router.delete("/:id", async (req, res, next) => {
   const id = req.params.id;
