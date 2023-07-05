@@ -7,11 +7,13 @@ const api = require("./api");
 const app = express();
 const PORT = process.env.PORT || 8000;
 const mongoURI = process.env.MONGO_URI;
+const cors = require("cors");
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/", api);
+app.use(cors({ origin: true }));
 
 // Database Connection
 mongoose.set("strictQuery", false);
