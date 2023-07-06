@@ -3,6 +3,7 @@ const { ObjectId } = mongoose.Types;
 const joi = require("joi");
 
 const db = mongoose.connection.useDb("AtlasMadness");
+const { updateSmartThingsDeviceState } = require("../lib/smartthings.js");
 
 const integrationsSchema = new mongoose.Schema({
   userId: { type: ObjectId, required: true },
@@ -74,6 +75,19 @@ const readAllIntegrations = async () => {
   }
 };
 
+const readAllIntegrationsByUserId = async (userId) => {
+  try {
+    const integrations = await Integration.find({ userId: userId });
+    console.log(
+      `New integrations Data is successfully returned ==: ${integrations}`
+    );
+    return integrations;
+  } catch (err) {
+    console.error(" == error:", err);
+    return null;
+  }
+};
+
 // get a specific integration
 const readIntegrationById = async (id) => {
   try {
@@ -132,12 +146,42 @@ const deleteIntegration = async (id) => {
   }
 };
 
+// executes all integrations associated with a signal
+const executeIntegrations = async (signal, token) => {
+  try {
+    const promises = [];
+
+    await Integration.find({ signal: signal }).then((integrations) => {
+      integrations.forEach((integration) => {
+        integration.actions.smartthings.devices.forEach((device) => {
+          promises.push(
+            updateSmartThingsDeviceState(
+              token,
+              device.deviceId,
+              device.state.toLowerCase()
+            )
+          );
+        });
+      });
+    });
+
+    const results = await Promise.all(promises);
+
+    return true;
+  } catch (err) {
+    console.error(" == error:", err);
+    return false;
+  }
+};
+
 module.exports = {
   integrationValidSchema,
   createIntegration,
   readAllIntegrations,
+  readAllIntegrationsByUserId,
   readIntegrationById,
   readIntegrationsBySignal,
   updateIntegration,
   deleteIntegration,
+  executeIntegrations,
 };

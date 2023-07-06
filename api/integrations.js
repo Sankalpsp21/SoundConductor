@@ -4,21 +4,24 @@ const { ObjectId } = mongoose.Types;
 const {
   integrationValidSchema,
   createIntegration,
-  readAllIntegrations,
+  readAllIntegrationsByUserId,
   readIntegrationById,
   readIntegrationsBySignal,
   updateIntegration,
   deleteIntegration,
+  executeIntegrations,
 } = require("../models/Integrations.js");
-const { updateSmartThingsDeviceState } = require("../lib/smartthings.js");
+
+const { readUserById } = require("../models/user.js");
 const router = Router();
 
 /*
 Get all integration data
 */
-router.get("/", async (req, res, next) => {
+router.get("/:userId", async (req, res, next) => {
+  const userId = req.params.userId;
   try {
-    const result = await readAllIntegrations();
+    const result = await readAllIntegrationsByUserId(userId);
     res.status(200).send(result);
   } catch (err) {
     next();
@@ -26,15 +29,15 @@ router.get("/", async (req, res, next) => {
 });
 
 /*
-Get all integrations data by id
+Get a specific integration's data by its objectId
 */
 router.get("/:id", async (req, res, next) => {
-  const id = req.params.id;
+  const objectId = req.params.id;
 
   try {
-    const result = await readIntegrationById(id);
+    const result = await readIntegrationById(objectId);
     if (!result) {
-      res.status(404).send({ Error: `id(${id}) does not exist` });
+      res.status(404).send({ Error: `objectId(${objectId}) does not exist` });
       return;
     }
     res.status(200).send(result);
@@ -44,7 +47,8 @@ router.get("/:id", async (req, res, next) => {
 });
 
 /*
-Create a new integration data
+Experiencing error with objectId validation
+Create a new integration data 
 */
 router.post("/", async (req, res, next) => {
   var body = null;
@@ -70,7 +74,7 @@ router.post("/", async (req, res, next) => {
 });
 
 /*
-Edit the integration data by id
+Edit a specific integration's data by id
 */
 router.patch("/:id", async (req, res, next) => {
   const id = req.params.id;
@@ -101,7 +105,7 @@ router.patch("/:id", async (req, res, next) => {
 });
 
 /*
-Delete the integration data by id
+Delete a specific integration by id
 */
 router.delete("/:id", async (req, res, next) => {
   const id = req.params.id;
@@ -126,8 +130,14 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
-router.post("/execute/:token", async (req, res, next) => {
+//passing token but wants to use the userid to get the token
+
+// 1. Looks up all user integrations that match given signal classification (e.g. singleClap)
+// 2. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
+router.post("/:userId/execute", async (req, res, next) => {
+  const userId = req.params.userId;
   const signal = req.body.signal;
+  var user = null;
 
   if (!signal) {
     res.status(400).send({
@@ -136,18 +146,24 @@ router.post("/execute/:token", async (req, res, next) => {
     return;
   }
 
-  const token = req.params.token;
+  // Find a user with a given userId and get the token
+  try {
+    user = await readUserById(userId);
+
+    if (!user) {
+      res.status(404).send({ Error: "Cannot find the user" });
+      return;
+    }
+  } catch (err) {
+    res.status(404).send({ Error: "Cannot find the user" });
+    return;
+  }
+
+  const token = user.token;
   var devices = null;
 
   try {
-    // ※※※ TO DO:
-    // 1. readIntegrationBySignal function should be updated.
-    // : This function should only return the array of devices by signal to use updateSmartThingsDeviceState function.
-
-    // updateSmartThingsDeviceState(bearerToken, deviceId, state)
-    // You can see the details of this function in lib/smartthings.js
-
-    devices = readIntegrationsBySignal(signal);
+    devices = await readIntegrationsBySignal(signal);
 
     // If there is no device, then just return status 200
     if (devices.length === 0) {
@@ -155,14 +171,22 @@ router.post("/execute/:token", async (req, res, next) => {
       return;
     }
 
-    // 2. I think once readIntegrationBySignal function is updated,
-    // then the only thing we need to do is call updateSmartThingsDeviceState function to update our devices' status
+    // If there is a device, then execute the integration
+
+    const executionResult = await executeIntegrations(signal, token);
+
+    if (executionResult) {
+      res.status(200).send({ Message: "Integration is successfully executed" });
+      return;
+    } else {
+      res
+        .status(400)
+        .send({ Error: "Integration is not successfully executed" });
+      return;
+    }
   } catch (err) {
-    // Some error handlings...
+    next();
   }
-  // ※※※ This is from our notion page by Alex
-  // 1. Looks up all user integrations that match given signal classification (e.g. singleClap)
-  // 2. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
 });
 
 module.exports = router;

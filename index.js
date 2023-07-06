@@ -7,11 +7,13 @@ const api = require("./api");
 const app = express();
 const PORT = process.env.PORT || 8000;
 const mongoURI = process.env.MONGO_URI;
+const cors = require("cors");
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/", api);
+app.use(cors({ origin: true }));
 
 // Database Connection
 mongoose.set("strictQuery", false);
@@ -25,9 +27,11 @@ mongoose
   })
   .finally(() => {
     mongoose.connection.useDb("AtlasMadness");
+    // This code should not exist for deploying this as Google Cloud Functions
+    /*
     app.listen(PORT, () => {
       console.log("== Server is running on port ", PORT);
-    });
+    });*/
   });
 
 app.use("*", function (req, res, next) {
@@ -47,4 +51,4 @@ app.use("*", function (err, req, res, next) {
   });
 });
 
-//exports.atlasmadness = app;
+exports.soundconductor = app;
