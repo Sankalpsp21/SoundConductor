@@ -22,7 +22,7 @@
 	integrationName: STRING,
 	signal: STRING,              	// e.g. doubleClap, singleClap
 	actions: {
-		smartthings: {
+		smartthings: {				// categories e.g. alexa, heygoogle...
 			devices: [              // List of deviceID-action pairs e.g {1, ON}
 				{
 					deviceId: STRING,
@@ -38,7 +38,34 @@
 }
 ```
 
-**Example:**
+**Our Rough Draft -- If you get confused with the structure**
+
+```
+{
+    "integrationId": "integration1"
+    "integrationName": "my integration",
+    "inputId": "singleClap"
+    "outputs": {
+        "smartthings": {
+            "devices": [
+                {
+                    "deviceId": "mydevice1",
+                    "state": "on"
+                },
+                {
+                    "deviceId": "mydevice2",
+                    "state": "off"
+                }
+            ]
+        },
+        "alexa": {
+            ...
+        }
+    }
+}
+```
+
+**Actual Example**
 
 ```
 {
@@ -60,9 +87,20 @@
 
 ## API Specification
 
+※ **Basic URL**: https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor
+
 ### `GET /users/{userId}`
 
 **Description:** Fetch a specific user data by userId.
+**Example Response**
+
+```
+{
+	"_id": "64a38b4d9f97a149ddc20fc1",
+	"token": "699d0a7e-0745-4699-844a-dbd3f1e9149e",
+	"__v": 0
+}
+```
 
 **Status Code Table**
 
@@ -91,7 +129,7 @@
 | 400         | Invalid Body          |
 | 500         | Internal Server error |
 
-### `GET /smartthings/devices/{token}`
+### `GET /smartthings/{userId}/devices`
 
 **Description:** Fetch a list of SmartThings devices that support the switch on/off capability by using SmartThings API.
 **Example Response**
@@ -127,9 +165,9 @@
 | 404         | A given token is invalid or not found |
 | 500         | Internal Server error                 |
 
-### `GET /integrations`
+### `GET /integrations/{userId}`
 
-**Description:** Fetch all integration data.
+**Description:** Fetch all integration data with a given userId.
 **Example Response**
 
 ```
@@ -139,16 +177,22 @@
 			"smartthings": {
 				"devices": [
 					{
-						"deviceId": "123",
-						"state": "OFF",
-						"_id": "649d0aa825e65fa45fc00fe1"
+						"deviceId": "sampleId",
+						"action": "openDoor",
+						"_id": "649d3a3c22768f2b7eb288b4"
+					},
+					{
+						"deviceId": "sampleId2",
+						"action": "openDoor2",
+						"_id": "649d3a3c22768f2b7eb288b5"
 					}
 				]
 			}
 		},
-		"_id": "649d0aa825e65fa45fc00fe0",
-		"integrationName": "shut blinds",
-		"signal": "clap",
+		"_id": "649d3a3c22768f2b7eb288b3",
+		"userId": "649d0aa825e65fa45fc00fe1",
+		"integrationName": "Integration2",
+		"signal": "doubleClap",
 		"__v": 0
 	},
 	{
@@ -157,13 +201,18 @@
 				"devices": [
 					{
 						"deviceId": "sampleId",
-						"state": "openDoor",
-						"_id": "649d39b79fdc315a2c1d2ddc"
+						"action": "openDoor",
+						"_id": "649d3b8c9a6a51f37e972070"
+					},
+					{
+						"deviceId": "sampleId2",
+						"action": "openDoor2",
+						"_id": "649d3b8c9a6a51f37e972071"
 					}
 				]
 			}
 		},
-		"_id": "649d39b79fdc315a2c1d2ddb",
+		"_id": "649d3b8c9a6a51f37e97206f",
 		"userId": "649d0aa825e65fa45fc00fe1",
 		"integrationName": "Integration2",
 		"signal": "doubleClap",
@@ -252,11 +301,15 @@
 | 404         | Data with given id does not exist |
 | 500         | Internal Server error             |
 
-### `POST /integrations/execute/{token} - In progress`
+### `POST /integrations/{userId}/execute`
+
+**Description**
 
 1. Get’s called after ML model classifies sound
 2. Looks up all user integrations that match given signal classification
 3. For each integration’s outputs (e.g. SmartThings light bulbs), turn it on/off
+
+**Request Body**
 
 ```
 {
