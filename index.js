@@ -12,8 +12,8 @@ app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use("/", api);
 app.use(cors({ origin: true }));
+app.use("/", api);
 
 // Database Connection
 mongoose.set("strictQuery", false);
