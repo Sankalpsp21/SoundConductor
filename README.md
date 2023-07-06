@@ -243,6 +243,7 @@
 ### `POST /integrations`
 
 **Description:** Create new integration data to the database.
+
 **Request Body**
 
 ```
