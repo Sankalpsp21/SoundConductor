@@ -12,6 +12,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "useUnknownInCatchVariables": false,
+    "noImplicitAny": false,
     "jsx": "react-jsx",
 
     /* Linting */
