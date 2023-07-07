@@ -63,7 +63,7 @@ export const getSmartThingsDevices = createAsyncThunk(
 
 // PATCH /integrations/{integrationId}
 export const updateIntegration = createAsyncThunk(
-	'session/createIntegration',
+	'session/updateIntegration',
 	async (integration: UpdateIntegration, { rejectWithValue }) => {
 		try {
 			console.log('submitting');
@@ -85,7 +85,7 @@ export const updateIntegration = createAsyncThunk(
 
 // DELETE /integrations/{integrationId}
 export const deleteIntegration = createAsyncThunk(
-	'session/createIntegration',
+	'session/deleteIntegration',
 	async (id: string, { rejectWithValue }) => {
 		try {
 			const response = await axios.delete(
