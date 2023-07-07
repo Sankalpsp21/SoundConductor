@@ -46,6 +46,7 @@ const createIntegration = async (body) => {
     integrationName: body.integrationName,
     signal: body.signal,
     state: body.state,
+    actions: body.actions,
   };
 
   try {
