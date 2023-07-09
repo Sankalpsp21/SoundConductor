@@ -25,3 +25,8 @@ export type UpdateIntegration = {
 	id: string;
 	integration: Integration;
 };
+
+export type ExecuteIntegration = {
+	userId: string;
+	signal: string;
+}

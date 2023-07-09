@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { PURGE } from 'redux-persist';
-import { Integration, UpdateIntegration, User } from '../../lib/types';
+import { Integration, UpdateIntegration, ExecuteIntegration, User } from '../../lib/types';
 
 const initialState: { user: User; integrations: Integration[] } = {
 	user: {
@@ -10,6 +10,23 @@ const initialState: { user: User; integrations: Integration[] } = {
 	},
 	integrations: []
 };
+
+export const executeIntegration = createAsyncThunk(
+	'session/executeIntegration',
+	async (integration: ExecuteIntegration, { rejectWithValue }) => {
+		try {
+			const response = await axios.post(
+				`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`,
+				integration.signal
+			);
+			// const response = await axios.get(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/users/${userId}`);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+			return rejectWithValue(error.response.data);
+		}
+	}
+);
 
 export const getUser = createAsyncThunk(
 	'session/getUser',
