@@ -19,7 +19,7 @@ export const executeIntegration = createAsyncThunk(
 				`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`,
 				integration.signal
 			);
-			// const response = await axios.get(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/users/${userId}`);
+			// const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`);
 			return response.data;
 		} catch (error) {
 			console.log(error);
