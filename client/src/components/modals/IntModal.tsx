@@ -49,17 +49,8 @@ const IntModal = () => {
 
     try {
       setIsModalOpen(false);
-      await dispatch(createIntegration(payload))
-        .unwrap()
-        .then((x) => {
-          if (x.meta.requestStatus === "rejected") {
-            return;
-          }
-
-          setTimeout(() => {
-            dispatch(integrationsByUser(userId));
-          }, 2000);
-        });
+      await dispatch(createIntegration(payload));
+      await dispatch(integrationsByUser(userId));
       setIntegrationName("");
       setSignal("");
       setDevices([]);

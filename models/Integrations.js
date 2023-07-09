@@ -6,15 +6,30 @@ const db = mongoose.connection.useDb("AtlasMadness");
 const { updateSmartThingsDeviceState } = require("../lib/smartthings.js");
 
 const integrationsSchema = new mongoose.Schema({
-  userId: { type: ObjectId, required: true },
-  integrationName: { type: String, required: true },
-  signal: { type: String, required: true },
+  userId: {
+    type: ObjectId,
+    required: true,
+  },
+  integrationName: {
+    type: String,
+    required: true,
+  },
+  signal: {
+    type: String,
+    required: true,
+  },
   actions: {
     smartthings: {
       devices: [
         {
-          deviceId: { type: String, required: true },
-          state: { type: String, required: true },
+          deviceId: {
+            type: String,
+            required: true,
+          },
+          state: {
+            type: String,
+            required: true,
+          },
         },
       ],
     },
@@ -27,12 +42,14 @@ const integrationValidSchema = joi.object({
   signal: joi.string().required(),
   actions: joi.object({
     smartthings: joi.object({
-      devices: joi.array().items(
-        joi.object({
-          deviceId: joi.string().required(),
-          state: joi.string().required(),
-        })
-      ),
+      devices: joi
+        .array()
+        .items(
+          joi.object({
+            deviceId: joi.string().required(),
+            state: joi.string().required(),
+          })
+        ),
     }),
   }),
 });
@@ -52,9 +69,9 @@ const createIntegration = async (body) => {
   try {
     const integration = new Integration(newIntegration);
     await integration.save();
-    console.log(
-      `New integration Data is successfully saved ==: ${integration._id}`
-    );
+    // console.log(
+    //   `New integration Data is successfully saved ==: ${integration._id}`
+    // );
     return integration._id;
   } catch (err) {
     console.error(" == error:", err);
@@ -66,9 +83,9 @@ const createIntegration = async (body) => {
 const readAllIntegrations = async () => {
   try {
     const integrations = await Integration.find({}).sort({ _id: 1 });
-    console.log(
-      `New integrations Data is successfully returned ==: ${integrations}`
-    );
+    // console.log(
+    //   `New integrations Data is successfully returned ==: ${integrations}`
+    // );
     return integrations;
   } catch (err) {
     console.error(" == error:", err);
@@ -79,9 +96,9 @@ const readAllIntegrations = async () => {
 const readAllIntegrationsByUserId = async (userId) => {
   try {
     const integrations = await Integration.find({ userId: userId });
-    console.log(
-      `New integrations Data is successfully returned ==: ${integrations}`
-    );
+    // console.log(
+    //   `New integrations Data is successfully returned ==: ${integrations}`
+    // );
     return integrations;
   } catch (err) {
     console.error(" == error:", err);
@@ -93,9 +110,9 @@ const readAllIntegrationsByUserId = async (userId) => {
 const readIntegrationById = async (id) => {
   try {
     const integration = await Integration.findById(id);
-    console.log(
-      `New integration Data is successfully returned ==: ${integration}`
-    );
+    // console.log(
+    //   `New integration Data is successfully returned ==: ${integration}`
+    // );
     return integration;
   } catch (err) {
     return null;
@@ -106,9 +123,9 @@ const readIntegrationById = async (id) => {
 const readIntegrationsBySignal = async (signal) => {
   try {
     const integrations = await Integration.find({ signal: signal });
-    console.log(
-      `New integrations Data is successfully returned ==: ${integrations}`
-    );
+    // console.log(
+    //   `New integrations Data is successfully returned ==: ${integrations}`
+    // );
     return integrations;
   } catch (err) {
     console.error(" == error:", err);
@@ -123,11 +140,17 @@ const updateIntegration = async (body, id) => {
     if (!integration) {
       return false;
     }
-    integration.set(body);
+    if (integration.actions.smartthings.devices && !body.integrationName && !body.signal) { 
+      integration.actions.smartthings.devices.push(
+        body.actions.smartthings.devices[0]
+      );
+    } else {
+      integration.set(body);
+    }
     await integration.save();
-    console.log(
-      `New integration Data is successfully updated ==: ${integration}`
-    );
+    // console.log(
+    //   `New integration Data is successfully updated ==: ${integration}`
+    // );
     return true;
   } catch (err) {
     console.error(" == error:", err);
@@ -139,7 +162,7 @@ const updateIntegration = async (body, id) => {
 const deleteIntegration = async (id) => {
   try {
     await Integration.findByIdAndDelete(id);
-    console.log(`New integration Data is successfully deleted ==`);
+    // console.log(`New integration Data is successfully deleted ==`);
     return true;
   } catch (err) {
     console.error(" == error:", err);

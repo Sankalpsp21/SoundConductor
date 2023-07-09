@@ -78,23 +78,6 @@ export const updateIntegration = createAsyncThunk(
 	}
 );
 
-// DELETE /integrations/{integrationId}
-export const deleteIntegration = createAsyncThunk(
-	'session/deleteIntegration',
-	async (id: string, { rejectWithValue }) => {
-		try {
-			const response = await axios.delete(
-				`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integration/${id}`
-			);
-
-			console.log('response', response.data);
-			return response.data;
-		} catch (error) {
-			return rejectWithValue(error.response.data);
-		}
-	}
-);
-
 export const createIntegration = createAsyncThunk(
 	'session/createIntegration',
 	async (integration: Integration, { rejectWithValue }) => {
@@ -127,12 +110,58 @@ export const integrationsByUser = createAsyncThunk(
             try {
                   const response = await axios.get(`http://localhost:8000/integrations/${userId}`);
                   // const response = await axios.get(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/user/${userId}`);
+			console.log('response', response.data)
                   return response.data;
             } catch (error) {
                   return rejectWithValue(error.response.data);
             }
       }
 );
+
+export const createDevice = createAsyncThunk(
+	'session/createDevice',
+	// take a device and integration id
+	async (payload: any, { rejectWithValue }) => {
+		const id = payload.integrationId;
+		try {
+			const response = await axios.patch(`http://localhost:8000/integrations/${id}`, payload);
+			// const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integrationId}`, device);
+			return response.data;
+		} catch (error) {
+			return rejectWithValue(error.response.data);
+		}
+	}
+);
+
+export const updateSignal = createAsyncThunk(
+	'session/updateSignal',
+
+	async (payload: any, { rejectWithValue }) => {
+		const id = payload.integrationId;
+		try {
+			const response = await axios.patch(`http://localhost:8000/integrations/${id}`, payload);
+			// const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integrationId}`, device);
+			return response.data;
+		} catch (error) {
+			return rejectWithValue(error.response.data);
+		}
+	}
+);
+
+export const deleteIntegration = createAsyncThunk(
+	'session/deleteIntegration',
+	async (payload: any, { rejectWithValue }) => {
+		const id = payload.integrationId;
+		try {
+			const response = await axios.delete(`http://localhost:8000/integrations/${id}`);
+			// const response = await axios.delete(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${id}`);
+			return response.data;
+		} catch (error) {
+			return rejectWithValue(error.response.data);
+		}
+	}
+);
+
 
 export const sessionSlice = createSlice({
       name: 'session',
@@ -176,6 +205,11 @@ export const sessionSlice = createSlice({
             });
       },
 });
+
+export const selectIntegrationByName = name => state => {
+	return state.session.integrations.find(integration => integration.integrationName === name);
+};
+
 
 export const { setUserToken } = sessionSlice.actions;
 

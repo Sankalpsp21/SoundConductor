@@ -13,6 +13,7 @@ export type SmartThingsAction = {
 };
 
 export type Integration = {
+	id?: string;
 	userId: string;
 	integrationName: string;
 	signal: string;

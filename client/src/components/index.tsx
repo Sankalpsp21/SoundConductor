@@ -1,9 +1,14 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Device, Integration, UpdateIntegration } from "../lib/types";
-import { updateIntegration, deleteIntegration } from "../redux/slices/Session";
+import { Device, Integration } from "../lib/types";
+import {
+  deleteIntegration,
+  integrationsByUser,
+  updateSignal,
+} from "../redux/slices/Session";
 import { AppDispatch } from "../redux/store/index";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import DeviceModal from "./modals/DeviceModal";
 
 export function DeviceCard(props: Device) {
   return (
@@ -98,7 +103,7 @@ interface GridProps {
   integrations: Integration[];
 }
 
-export function IntegrationGrid( { integrations }: GridProps) {
+export function IntegrationGrid({ integrations }: GridProps) {
   // convert to array of objects
   const integrationArray = Object.keys(integrations).map(
     (key) => integrations[key]
@@ -124,6 +129,7 @@ export function DetailIntegrationView() {
   const dispatch = useDispatch<AppDispatch>();
 
   const integrations = useSelector((state: any) => state.session.integrations);
+  const user = useSelector((state: any) => state.session.user);
   const navigate = useNavigate();
   const integrationName = window.location.pathname
     .split("/")[2]
@@ -133,44 +139,34 @@ export function DetailIntegrationView() {
     (integration: any) => integration.integrationName === integrationName
   );
 
-  const [updatedIntegrationSignal, setUpdateIntegrationSignal] = useState(
-    integration.signal
-  );
+  const [signal, setSignal] = useState(integration.signal);
 
-  const updateIntegrationEvent = async (e: any) => {
+  useEffect(() => {
+    dispatch(integrationsByUser(user.id));
+  }, []);
+
+  const updateIntegrationEvent = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-    console.log("update integration event");
-
-    const payload: Integration = {
-      userId: integration.userId,
-      integrationName,
-      signal: integration.signal,
-      actions: integration.actions,
+    const payload = {
+      integrationId: integration._id,
+      signal: signal,
     };
-
-    const integrationPayload: UpdateIntegration = {
-      id: "asdf",
-      integration: payload,
-    };
-
-    try {
-      await dispatch(updateIntegration(integrationPayload));
-    } catch (error) {
-      console.log(error);
-    }
+    await dispatch(updateSignal(payload));
+    await dispatch(integrationsByUser(user.id));
   };
 
-  const deleteIntegrationEvent = async (e: any) => {
+  const deleteIntegrationEvent = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-    console.log("delete integration event");
-
-    const id = "asdf";
-
-    try {
-      await dispatch(deleteIntegration(id));
-    } catch (error) {
-      console.log(error);
-    }
+    const payload = {
+      integrationId: integration._id,
+    };
+    navigate("/integrations");
+    await dispatch(deleteIntegration(payload));
+    await dispatch(integrationsByUser(user.id));
   };
 
   return (
@@ -187,21 +183,8 @@ export function DetailIntegrationView() {
             <input
               type="text"
               id="signal"
-              onChange={(e) => {
-                e.preventDefault();
-                setUpdateIntegrationSignal(e.target.value);
-              }}
-              value={updatedIntegrationSignal}
-              className="border border-gray-300 rounded-md p-2"
-            />
-
-            <h1 className="text-3xl font-bold pb-4 pt-8">Actions</h1>
-
-            <input
-              type="text"
-              id="actions"
-              value={"???"}
-              onChange={() => null}
+              onChange={(e) => setSignal(e.target.value)}
+              value={signal}
               className="border border-gray-300 rounded-md p-2"
             />
 
@@ -228,6 +211,7 @@ export function DetailIntegrationView() {
               </button>
               <button
                 className="btn btn-success"
+                type="submit"
                 onClick={updateIntegrationEvent}
               >
                 Update

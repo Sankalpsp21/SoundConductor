@@ -40,10 +40,6 @@ app.use("*", function (req, res, next) {
   });
 });
 
-app.listen(PORT, () => {
-  console.log("== Server is running on port ", PORT);
-});
-
 /*
  * This route will catch any errors thrown from our API endpoints and return
  * a response with a 500 status to the client.

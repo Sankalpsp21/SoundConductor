@@ -61,12 +61,14 @@ Edit a specific integration's data by id
 router.patch("/:id", async (req, res, next) => {
   const id = req.params.id;
 
+  delete req.body.integrationId;
+
   if (!id) {
     res.status(400).send({ Error: "You need to pass an id for query" });
     return;
   }
 
-  if (Object.keys(req.body).length === 0) {
+  if (!req.body) {
     res.status(400).send({ Error: "You need to pass a body for update" });
     return;
   }
