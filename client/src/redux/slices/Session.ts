@@ -76,28 +76,6 @@ export const getSmartThingsDevices = createAsyncThunk(
 	}
 );
 
-// PATCH /integrations/{integrationId}
-export const updateIntegration = createAsyncThunk(
-	'session/updateIntegration',
-	async (integration: UpdateIntegration, { rejectWithValue }) => {
-		try {
-			console.log('submitting');
-
-			console.log('integration', JSON.stringify(integration));
-
-			const response = await axios.patch(
-				`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integration/${integration.id}`,
-				integration.integration
-			);
-
-			console.log('response', response.data);
-			return response.data;
-		} catch (error) {
-			return rejectWithValue(error.response.data);
-		}
-	}
-);
-
 export const createIntegration = createAsyncThunk(
 	'session/createIntegration',
 	async (integration: Integration, { rejectWithValue }) => {
