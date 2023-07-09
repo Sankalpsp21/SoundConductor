@@ -29,24 +29,6 @@ router.get("/:userId", async (req, res, next) => {
 });
 
 /*
-Get a specific integration's data by its objectId
-*/
-router.get("/:id", async (req, res, next) => {
-  const objectId = req.params.id;
-
-  try {
-    const result = await readIntegrationById(objectId);
-    if (!result) {
-      res.status(404).send({ Error: `objectId(${objectId}) does not exist` });
-      return;
-    }
-    res.status(200).send(result);
-  } catch (err) {
-    next();
-  }
-});
-
-/*
 Experiencing error with objectId validation
 Create a new integration data 
 */

@@ -2,7 +2,10 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Integration } from "../../lib/types";
-import { createIntegration } from "../../redux/slices/Session";
+import {
+  createIntegration,
+  integrationsByUser,
+} from "../../redux/slices/Session";
 import { AppDispatch } from "../../redux/store/index";
 
 type Device = {
@@ -42,7 +45,18 @@ const IntModal = () => {
     };
 
     try {
-      await dispatch(createIntegration(payload));
+      setIsModalOpen(false);
+      await dispatch(createIntegration(payload))
+        .unwrap()
+        .then((x) => {
+          if (x.meta.requestStatus === "rejected") {
+            return;
+          }
+
+          setTimeout(() => {
+            dispatch(integrationsByUser(userId));
+          }, 2000);
+        });
       setIntegrationName("");
       setSignal("");
       setDevices([]);

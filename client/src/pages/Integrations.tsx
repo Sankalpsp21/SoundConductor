@@ -1,27 +1,33 @@
-import { useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { IntegrationGrid } from "../components";
 import IntModal from "../components/modals/IntModal";
+import { User } from "../lib/types";
 import { integrationsByUser } from "../redux/slices/Session";
-import { AppDispatch } from "../redux/store/index";
+import { AppDispatch, RootState } from "../redux/store/index";
 
 const Integrations = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state: any) => state.session.user);
+  const user = useSelector((state: RootState) => state.session.user);
+  const userRef = useRef<User>();
   const location = useLocation();
   const hasChildRoute = location.pathname.includes("/integrations/");
+  const hasToken = useSelector((state: RootState) => state.session.user.token);
+  const integrations = useSelector(
+    (state: RootState) => state.session.integrations
+  );
 
   useEffect(() => {
-    if (!user) {
-      navigate("/");
+
+    if (!hasToken) {
+      navigate("/auth");
     }
-  }, [user, navigate]);
 
-  useEffect(() => {
     dispatch(integrationsByUser(user.id));
-  }, [dispatch, user]);
+  }, [integrations]);
 
   return (
     <>
@@ -35,7 +41,7 @@ const Integrations = () => {
                 <IntModal />
               </div>
               <div className="flex flex-row justify-center gap-4">
-                <IntegrationGrid />
+                <IntegrationGrid integrations={integrations} />
               </div>
             </>
           )}

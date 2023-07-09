@@ -1,35 +1,10 @@
-import axios from "axios";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import useSession from "../hooks/useSession";
-import { setToken } from "../redux/slices/Session";
-import { AppDispatch } from "../redux/store/index";
 
 const Home = () => {
   const navigate = useNavigate();
-  const dispatch: AppDispatch = useDispatch();
-  const user = useSelector((state: any) => state.session.user);
-  const { user: data } = useSession(user.id);
-
-  const fetchToken = async () => {
-    try {
-      const { data } = await axios.get(
-        `http://localhost:8000/users/${user.id}/token`
-      );
-      dispatch(setToken(data.token));
-    } catch (error) {
-      console.error("API request error:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!user && !data) {
-      navigate("/");
-    }
-    fetchToken();
-  }, [user]);
-
+  // const dispatch: AppDispatch = useDispatch();
+  // const user = useSelector((state: any) => state.session.user);
+  // const { user: data } = useSession(user.id);
   return (
     <>
       <div className="hero min-h-screen bg-base-100">

@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Device, Integration } from "../lib/types";
+import { Device, Integration } from '../lib/types';
+import DeviceModal from "./modals/DeviceModal";
 
 export function DeviceCard(props: Device) {
   return (
@@ -91,8 +92,11 @@ export function IntegrationCard(props: Integration) {
   );
 }
 
-export function IntegrationGrid() {
-  const integrations = useSelector((state: any) => state.session.integrations);
+interface GridProps {
+  integrations: Integration[];
+}
+
+export function IntegrationGrid( { integrations }: GridProps) {
   // convert to array of objects
   const integrationArray = Object.keys(integrations).map(
     (key) => integrations[key]
@@ -156,28 +160,7 @@ export function DetailIntegrationView() {
 
             <div className="flex flex-row justify-start gap-4 items-baseline">
               <h1 className="text-3xl font-bold pb-4 pt-8">Devices</h1>
-
-              <button
-                title="Add Device"
-                className="btn btn-circle btn-outline btn-xs"
-                type="button"
-                aria-label="Add Device"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-              </button>
+              <DeviceModal />
             </div>
 
             <div className="grid grid-cols-5 gap-4 w-full m-6">

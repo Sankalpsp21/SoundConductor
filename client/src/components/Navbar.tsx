@@ -24,7 +24,6 @@ const Navbar = ({
     } else if (activeTab === "Playground") {
       navigate("/playground");
     } else if (activeTab === "") {
-      console.log("location.pathname", location.pathname);
       switch (location.pathname) {
         case location.pathname.includes("/integrations") && location.pathname:
           setTab("Your Integrations");

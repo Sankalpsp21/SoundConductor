@@ -1,13 +1,20 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createNewUser } from "../redux/slices/Session";
-import { AppDispatch } from "../redux/store/index";
+import { createNewUser, setUserToken } from "../redux/slices/Session";
+import { AppDispatch, RootState } from "../redux/store/index";
 
 const Auth = () => {
   const [token, setToken] = useState("");
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
+  const hasToken = useSelector((state: RootState) => state.session.user.token);
+
+  useEffect(() => {
+    if (hasToken) {
+      navigate("/home");
+    }
+  }, [hasToken, navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,6 +27,10 @@ const Auth = () => {
 
     if (y.meta.requestStatus === "rejected") {
       return;
+    }
+
+    if (y.payload) {
+      dispatch(setUserToken(token));
     }
 
     navigate("/home");
