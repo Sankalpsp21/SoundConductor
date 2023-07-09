@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { executeIntegration } from "../redux/slices/Session";
+import { AppDispatch, RootState } from "../redux/store/index";
 
 import * as tf from "@tensorflow/tfjs";
-
 import * as d3 from 'd3';
+import { ExecuteIntegration } from "../lib/types";
 
 
 const Playground = () => {
@@ -14,13 +17,19 @@ const Playground = () => {
   const [confidence, setConfidence] = useState(0);
   const location = useLocation();
 
+  const dispatch: AppDispatch = useDispatch();
+
   const yamnetUrl = "https://tfhub.dev/google/tfjs-model/yamnet/tfjs/1"; // Path to YAMNet model
   const modelUrl = "/model.json";  // Path to our custom model
 
   //const yamnetClassMap = new Map<number, string>();
   const yamnetClassMap = useRef<Map<number, string>>(new Map<number, string>());
 
+  const user = useSelector((state: RootState) => state.session.user);
+
   useEffect(() => {
+      console.log(user);
+
       async function wrapper() {
         async function loadSoundClassMap() {
           const map = yamnetClassMap.current;
@@ -37,7 +46,7 @@ const Playground = () => {
 
         await loadSoundClassMap();
 
-        console.log(yamnetClassMap.current.get(0) || 'unknown');
+        //console.log(yamnetClassMap.current.get(0) || 'unknown');
       
         async function loadYAMNetModel() {
           yamnet.current = await tf.loadGraphModel(yamnetUrl, { fromTFHub: true });
@@ -115,6 +124,7 @@ const Playground = () => {
               if(score > 0.6 && scoreData != 494) {
                 console.log(`YAMNet class ${yamnetClass} (${scoreData}) with score ${scoresData[0][scoreData]}`);
                 setLabel(yamnetClass);
+                setConfidence(scoresData[0][scoreData]);
 
                 if (custom.current && scoreData == 461) {
                   const customPrediction = custom.current.predict(reshapedWaveform);
@@ -125,6 +135,17 @@ const Playground = () => {
                   
                   console.log(`Custom class ${customScoreData} with score ${customScoreData}`);
                 }
+
+                
+
+                const input : ExecuteIntegration = {
+                  userId: user.id,
+                  signal: "clap"
+                }
+
+                console.log(input);
+
+                dispatch(executeIntegration(input));
               }
               
             }

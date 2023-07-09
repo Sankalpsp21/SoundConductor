@@ -15,9 +15,12 @@ export const executeIntegration = createAsyncThunk(
 	'session/executeIntegration',
 	async (integration: ExecuteIntegration, { rejectWithValue }) => {
 		try {
+			console.log('executing integration...');
+			console.log(integration.userId);
+			console.log(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`);
 			const response = await axios.post(
 				`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`,
-				integration.signal
+				{signal: integration.signal}
 			);
 			// const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`);
 			return response.data;
@@ -48,8 +51,8 @@ export const createNewUser = createAsyncThunk(
       'session/createNewUser',
       async (token: string, { rejectWithValue }) => {
             try {
-                  const response = await axios.post(`http://localhost:8000/smartthings/token`, { token });
-                  // const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/smartthings/token`, { token });
+                //   const response = await axios.post(`http://localhost:8000/smartthings/token`, { token });
+                  const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/smartthings/token`, { token });
                   return response.data;
             } catch (error) {
                   return rejectWithValue(error.response.data);
@@ -142,8 +145,8 @@ export const integrationsByUser = createAsyncThunk(
       'session/integrationsByUser',
       async (userId: string, { rejectWithValue }) => {
             try {
-                  const response = await axios.get(`http://localhost:8000/integrations/${userId}`);
-                  // const response = await axios.get(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/user/${userId}`);
+                //   const response = await axios.get(`http://localhost:8000/integrations/${userId}`);
+                  const response = await axios.get(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/user/${userId}`);
                   return response.data;
             } catch (error) {
                   return rejectWithValue(error.response.data);
