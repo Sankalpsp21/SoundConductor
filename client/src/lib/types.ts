@@ -1,22 +1,27 @@
 export interface User {
-  id: string;
-  token?: string;
+	id: string;
+	token?: string;
 }
 
 export type Device = {
-  deviceId: string;
-  state: string;
+	deviceId: string;
+	state: string;
 };
 
 export type SmartThingsAction = {
-  devices: Device[];
+	devices: Device[];
 };
 
 export type Integration = {
-  userId: string;
-  integrationName: string;
-  signal: string;
-  actions: {
-    smartthings: SmartThingsAction;
-  };
+	userId: string;
+	integrationName: string;
+	signal: string;
+	actions: {
+		smartthings: SmartThingsAction;
+	};
+};
+
+export type UpdateIntegration = {
+	id: string;
+	integration: Integration;
 };

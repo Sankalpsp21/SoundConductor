@@ -1,7 +1,9 @@
-import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Device, Integration } from '../lib/types';
-import DeviceModal from "./modals/DeviceModal";
+import { Device, Integration, UpdateIntegration } from "../lib/types";
+import { updateIntegration, deleteIntegration } from "../redux/slices/Session";
+import { AppDispatch } from "../redux/store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
 
 export function DeviceCard(props: Device) {
   return (
@@ -119,6 +121,8 @@ export function IntegrationGrid( { integrations }: GridProps) {
 }
 
 export function DetailIntegrationView() {
+  const dispatch = useDispatch<AppDispatch>();
+
   const integrations = useSelector((state: any) => state.session.integrations);
   const navigate = useNavigate();
   const integrationName = window.location.pathname
@@ -128,6 +132,46 @@ export function DetailIntegrationView() {
   const integration = integrations.find(
     (integration: any) => integration.integrationName === integrationName
   );
+
+  const [updatedIntegrationSignal, setUpdateIntegrationSignal] = useState(
+    integration.signal
+  );
+
+  const updateIntegrationEvent = async (e: any) => {
+    e.preventDefault();
+    console.log("update integration event");
+
+    const payload: Integration = {
+      userId: integration.userId,
+      integrationName,
+      signal: integration.signal,
+      actions: integration.actions,
+    };
+
+    const integrationPayload: UpdateIntegration = {
+      id: "asdf",
+      integration: payload,
+    };
+
+    try {
+      await dispatch(updateIntegration(integrationPayload));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteIntegrationEvent = async (e: any) => {
+    e.preventDefault();
+    console.log("delete integration event");
+
+    const id = "asdf";
+
+    try {
+      await dispatch(deleteIntegration(id));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -143,8 +187,11 @@ export function DetailIntegrationView() {
             <input
               type="text"
               id="signal"
-              onChange={() => null}
-              value={integration.signal}
+              onChange={(e) => {
+                e.preventDefault();
+                setUpdateIntegrationSignal(e.target.value);
+              }}
+              value={updatedIntegrationSignal}
               className="border border-gray-300 rounded-md p-2"
             />
 
@@ -178,6 +225,18 @@ export function DetailIntegrationView() {
                 onClick={() => navigate("/playground")}
               >
                 Try In Playground
+              </button>
+              <button
+                className="btn btn-success"
+                onClick={updateIntegrationEvent}
+              >
+                Update
+              </button>
+              <button
+                className="btn btn-error"
+                onClick={deleteIntegrationEvent}
+              >
+                Delete
               </button>
             </div>
           </form>

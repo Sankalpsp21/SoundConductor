@@ -16,7 +16,10 @@ type Device = {
 const IntModal = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [animationParent] = useAutoAnimate();
-  const [animationChild] = useAutoAnimate({ duration: 400, easing: "linear" });
+  const [animationChild] = useAutoAnimate({
+    duration: 400,
+    easing: "linear",
+  });
   const modalRef = useRef<HTMLDialogElement>(null);
   const userId = useSelector((state: any) => state.session.user.id);
   const [integrationName, setIntegrationName] = useState("");
@@ -63,7 +66,7 @@ const IntModal = () => {
     } catch (error) {
       console.log(error);
     }
-  };
+};
 
   return (
     <>
