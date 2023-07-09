@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { PURGE } from 'redux-persist';
-import { Integration, UpdateIntegration, User } from '../../lib/types';
+import { Integration, UpdateIntegration, ExecuteIntegration, User } from '../../lib/types';
 
 const initialState: { user: User; integrations: Integration[] } = {
 	user: {
@@ -10,6 +10,26 @@ const initialState: { user: User; integrations: Integration[] } = {
 	},
 	integrations: []
 };
+
+export const executeIntegration = createAsyncThunk(
+	'session/executeIntegration',
+	async (integration: ExecuteIntegration, { rejectWithValue }) => {
+		try {
+			console.log('executing integration...');
+			console.log(integration.userId);
+			console.log(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`);
+			const response = await axios.post(
+				`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`,
+				{signal: integration.signal}
+			);
+			// const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/${integration.userId}/execute`);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+			return rejectWithValue(error.response.data);
+		}
+	}
+);
 
 export const getUser = createAsyncThunk(
 	'session/getUser',
@@ -31,8 +51,8 @@ export const createNewUser = createAsyncThunk(
       'session/createNewUser',
       async (token: string, { rejectWithValue }) => {
             try {
-                  const response = await axios.post(`http://localhost:8000/smartthings/token`, { token });
-                  // const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/smartthings/token`, { token });
+                //   const response = await axios.post(`http://localhost:8000/smartthings/token`, { token });
+                  const response = await axios.post(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/smartthings/token`, { token });
                   return response.data;
             } catch (error) {
                   return rejectWithValue(error.response.data);
@@ -110,7 +130,7 @@ export const integrationsByUser = createAsyncThunk(
             try {
                   const response = await axios.get(`http://localhost:8000/integrations/${userId}`);
                   // const response = await axios.get(`https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/integrations/user/${userId}`);
-			console.log('response', response.data)
+			// console.log('response', response.data)
                   return response.data;
             } catch (error) {
                   return rejectWithValue(error.response.data);
