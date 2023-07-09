@@ -28,7 +28,7 @@ const Integrations = () => {
   }, []);
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center">
       <div className="container mx-auto">
         <div className="flex flex-col items-center justify-center">
           {!hasChildRoute && (
@@ -46,7 +46,7 @@ const Integrations = () => {
         </div>
         <Outlet />
       </div>
-    </>
+    </div>
   );
 };
 

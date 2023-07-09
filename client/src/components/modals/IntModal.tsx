@@ -6,7 +6,7 @@ import {
   createIntegration,
   integrationsByUser,
 } from "../../redux/slices/Session";
-import { AppDispatch } from "../../redux/store/index";
+import { AppDispatch, RootState } from '../../redux/store/index';
 
 type Device = {
   deviceId: string;
@@ -21,7 +21,7 @@ const IntModal = () => {
     easing: "linear",
   });
   const modalRef = useRef<HTMLDialogElement>(null);
-  const userId = useSelector((state: any) => state.session.user.id);
+  const userId = useSelector((state: RootState) => state.session.user.id);
   const [integrationName, setIntegrationName] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const [signal, setSignal] = useState("");
@@ -57,7 +57,7 @@ const IntModal = () => {
     } catch (error) {
       console.log(error);
     }
-};
+  };
 
   return (
     <>
@@ -112,17 +112,6 @@ const IntModal = () => {
                 onSubmit={handleSubmit}
                 className="flex flex-col space-y-2 my-8"
               >
-                <label htmlFor="userId" className="font-bold text-blue-500">
-                  User ID:
-                </label>
-                <input
-                  type="text"
-                  id="userId"
-                  name="userId"
-                  value={userId || ""}
-                  disabled
-                  className="border border-gray-300 rounded-md"
-                />
                 <label
                   htmlFor="integrationName"
                   className="font-bold text-blue-500"
@@ -190,7 +179,7 @@ const IntModal = () => {
                           htmlFor={`deviceId${index}`}
                           className="font-bold text-blue-500"
                         >
-                          Device ID {index + 1}:
+                          Device {index + 1} ID:
                         </label>
                         <button
                           className="btn btn-circle btn-outline btn-xs"

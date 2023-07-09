@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation, useNavigate } from "react-router-dom";
 import { Device, Integration } from "../lib/types";
 import {
@@ -5,7 +6,7 @@ import {
   integrationsByUser,
   updateSignal,
 } from "../redux/slices/Session";
-import { AppDispatch } from "../redux/store/index";
+import { AppDispatch, RootState } from "../redux/store/index";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import DeviceModal from "./modals/DeviceModal";
@@ -13,7 +14,7 @@ import DeviceModal from "./modals/DeviceModal";
 export function DeviceCard(props: Device) {
   return (
     <>
-      <div className="card shadow-lg w-fit bg-base-300 rounded-box  hover:shadow-xl hover:scale-105 transform transition-all duration-500 m-4 hover:bg-base-100">
+      <div className="card shadow-lg w-fit bg-base-300 rounded-box">
         <div className="card-body flex flex-col justify-center items-center">
           <h3 className="card-title underline">Device ID</h3>
 
@@ -52,12 +53,7 @@ export function IntegrationCard(props: Integration) {
 
           <p>{props.signal}</p>
 
-          <h3 className="card-title underline">Actions</h3>
-
-          <p>???</p>
-
           <h3 className="card-title">Devices</h3>
-
           {props.actions.smartthings.devices.length > 1 ? (
             <>
               {props.actions.smartthings.devices
@@ -68,8 +64,6 @@ export function IntegrationCard(props: Integration) {
                 ))
                 .filter((_, index) => index < 1)}
 
-              {/* sya the amount missing */}
-
               <button
                 className="btn btn-ghost btn-square btn-md"
                 type="button"
@@ -77,7 +71,7 @@ export function IntegrationCard(props: Integration) {
               >
                 {props.actions.smartthings.devices.length > 1
                   ? `+${props.actions.smartthings.devices.length - 1}`
-                  : `+${props.actions.smartthings.devices.length}`}{" "}
+                  : `+${props.actions.smartthings.devices.length}`}
                 more
               </button>
             </>
@@ -90,9 +84,6 @@ export function IntegrationCard(props: Integration) {
               ))}
             </>
           )}
-          <div className="card-actions">
-            <button className="btn btn-primary">Try In Playground</button>
-          </div>
         </div>
       </div>
     </>
@@ -104,7 +95,6 @@ interface GridProps {
 }
 
 export function IntegrationGrid({ integrations }: GridProps) {
-  // convert to array of objects
   const integrationArray = Object.keys(integrations).map(
     (key) => integrations[key]
   );
@@ -128,15 +118,18 @@ export function IntegrationGrid({ integrations }: GridProps) {
 export function DetailIntegrationView() {
   const dispatch = useDispatch<AppDispatch>();
 
-  const integrations = useSelector((state: any) => state.session.integrations);
-  const user = useSelector((state: any) => state.session.user);
+  const integrations = useSelector(
+    (state: RootState) => state.session.integrations
+  );
+  const user = useSelector((state: RootState) => state.session.user);
   const navigate = useNavigate();
   const integrationName = window.location.pathname
     .split("/")[2]
     .replace(/%20/g, " ");
 
   const integration = integrations.find(
-    (integration: any) => integration.integrationName === integrationName
+    (integration: Integration) =>
+      integration.integrationName === integrationName
   );
 
   const [signal, setSignal] = useState(integration.signal);
@@ -174,26 +167,28 @@ export function DetailIntegrationView() {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 gap-4 w-full m-6">
           <form className="flex flex-col space-y-4">
-            <h2 className="text-4xl font-bold text-white my-6 underline">
+            <h2 className="text-6xl font-bold text-white my-16 underline">
               {integrationName}
             </h2>
 
-            <h1 className="text-3xl font-bold pb-4">Signal</h1>
+            <h1 className="text-5xl font-bold pb-4">Signal</h1>
 
             <input
               type="text"
               id="signal"
               onChange={(e) => setSignal(e.target.value)}
               value={signal}
-              className="border border-gray-300 rounded-md p-2"
+              className="input input-bordered input-primary w-full max-w-xl"
             />
 
             <div className="flex flex-row justify-start gap-4 items-baseline">
-              <h1 className="text-3xl font-bold pb-4 pt-8">Devices</h1>
+              <h1 className="text-5xl font-bold pb-4 pt-8">
+                Devices In This Integration
+              </h1>
               <DeviceModal />
             </div>
 
-            <div className="grid grid-cols-5 gap-4 w-full m-6">
+            <div className="grid grid-cols-8 gap-4 w-full m-6">
               {integration.actions.smartthings.devices.map((device: Device) => (
                 <div key={device.deviceId}>
                   <DeviceCard {...device} />
@@ -201,23 +196,23 @@ export function DetailIntegrationView() {
               ))}
             </div>
 
-            <div className="card-actions">
+            <div className="card-actions flex flex-row justify-start gap-4 m-4 py-8 align-bottom">
               <button
-                className="btn btn-primary"
+                className="btn btn-primary btn-lg"
                 type="submit"
                 onClick={() => navigate("/playground")}
               >
                 Try In Playground
               </button>
               <button
-                className="btn btn-success"
+                className="btn btn-success btn-lg"
                 type="submit"
                 onClick={updateIntegrationEvent}
               >
                 Update
               </button>
               <button
-                className="btn btn-error"
+                className="btn btn-error btn-lg"
                 onClick={deleteIntegrationEvent}
               >
                 Delete

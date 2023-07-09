@@ -31,3 +31,21 @@ export type ExecuteIntegration = {
 	userId: string;
 	signal: string;
 }
+
+export type CreateDevice = {
+	integrationId: string;
+	actions: {
+		smartthings: {
+			devices: Device[];
+		};
+	};
+};
+
+export type UpdateSignal = {
+	integrationId: string;
+	signal: string;
+};
+
+export type DeleteIntegration = {
+	integrationId: string;
+};
