@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { executeIntegration } from '../redux/slices/Session';
 import { AppDispatch, RootState } from '../redux/store/index';
@@ -14,7 +14,6 @@ const Playground = () => {
 	const audioContext = useRef<any>(null);
 	const [label, setLabel] = useState('Preparing Model ...');
 	const [confidence, setConfidence] = useState(0);
-	const location = useLocation();
 
 	const dispatch: AppDispatch = useDispatch();
 
@@ -94,6 +93,9 @@ const Playground = () => {
 				console.log('Script processor created');
 				console.log(scriptNode);
 				setLabel('Listening ...');
+
+				// let lastPrintTime = Date.now(); // Initialize last print time with the current time
+
 				scriptNode.onaudioprocess = async (audioProcessingEvent) => {
 					//console.log('Audio processing event');
 					// Get input and output buffer
@@ -117,8 +119,6 @@ const Playground = () => {
 
 					//const waveform = new Float32Array(inputData);
 
-					
-
 					if (yamnet.current) {
 						// Make sure that the Yamnet model input shape matches the length of the waveform
 						//const reshapedWaveform = tf.tensor(inputData, [1, inputData.length]);
@@ -131,7 +131,7 @@ const Playground = () => {
 
 						//Predict using Tensorflow.js
 						//const prediction = yamnet.current.predict(reshapedWaveform);
-						const [scores, embeddings, spectrogram] =
+						const [scores, _embeddings, _spectrogram] =
 							yamnet.current.predict(reshapedWaveform);
 						const classWithMaxScore = scores.argMax(-1); // last dimension
 						const scoreData = await classWithMaxScore.data();
@@ -146,26 +146,35 @@ const Playground = () => {
 							yamnetClassMap.current.get(parsedScore) ||
 							'unknown';
 
-						const clapClasses = [56, 461, 400, 410, 436, 461, 466, 488];
+						const clapClasses = [
+							56, 461, 410, 434, 436, 461, 466, 488
+						];
 
-						if (score > 0.6 && scoreData != 494) {
+						if (score > 0.6 && parsedScore != 494) {
+							// const currentTime = Date.now();
+							// if (currentTime - lastPrintTime >= 1000) {
+							// 	console.log(currentTime - lastPrintTime);
+							// 	lastPrintTime = currentTime;
+
 							console.log(
-								`YAMNet class ${yamnetClass} (${scoreData}) with score ${scoresData[0][scoreData]}`
+								`YAMNet class ${parsedScore} - ${yamnetClass} (${parsedScore}) with score ${scoresData[0][parsedScore]}`
 							);
-							setLabel(yamnetClass);
-							setConfidence(scoresData[0][scoreData]);
 
-							if (custom.current && clapClasses.includes(parsedScore)) {
+							setLabel(yamnetClass);
+							setConfidence(scoresData[0][parsedScore]);
+
+							if (
+								custom.current &&
+								clapClasses.includes(parsedScore)
+							) {
 								const customPrediction =
 									custom.current.predict(reshapedWaveform);
 								const customClassWithMaxScore =
 									customPrediction.argMax(-1); // last dimension
 								const customScoreData =
 									await customClassWithMaxScore.data();
-								const customScoresData =
-									await customPrediction.array();
-								const customScore =
-									customScoresData[0][customScoreData];
+								// const customScoresData = await customPrediction.array();
+								// const customScore = customScoresData[0][customScoreData];
 
 								console.log(
 									`Custom class ${customScoreData} with score ${customScoreData}`
@@ -177,12 +186,15 @@ const Playground = () => {
 								};
 
 								console.log(input);
-
 								dispatch(executeIntegration(input));
 							}
-
-						
+							// }
 						}
+
+						// delay 200ms
+						await new Promise((resolve) =>
+							setTimeout(resolve, 200)
+						);
 					}
 				};
 

@@ -165,10 +165,10 @@ export const sessionSlice = createSlice({
 		builder.addCase(createNewUser.rejected, (state) => {
 			state.user = { ...state.user };
 		});
-		builder.addCase(getSmartThingsDevices.fulfilled, (state, action) => {
+		builder.addCase(getSmartThingsDevices.fulfilled, (_state, _action) => {
 			// state.integrations = action.payload;
 		});
-		builder.addCase(getSmartThingsDevices.rejected, (state) => {
+		builder.addCase(getSmartThingsDevices.rejected, (_state) => {
 			// state.integrations = [];
 		});
 		builder.addCase(createIntegration.rejected, (state) => {

@@ -1,7 +1,8 @@
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { getSmartThingsDevices } from '../redux/slices/Session';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
+import { Dispatch, AnyAction } from 'redux';
 
 type DeviceOption = {
 	id: string;
@@ -22,9 +23,11 @@ const IntegrationForm = () => {
 
 	useEffect(() => {
 		async function getDevices() {
-			const smartThingsDevices = await dispatch(getSmartThingsDevices(userId));
+			const smartThingsDevices: any = await dispatch(
+				getSmartThingsDevices(userId)
+			);
 			console.log(smartThingsDevices);
-			
+
 			const devices: DeviceOption[] = [];
 
 			if (smartThingsDevices.payload) {
@@ -35,7 +38,7 @@ const IntegrationForm = () => {
 					};
 					devices.push(newDevice);
 				});
-				setDeviceOptions(devices)
+				setDeviceOptions(devices);
 			}
 		}
 		getDevices();
@@ -297,3 +300,42 @@ const IntegrationForm = () => {
 };
 
 export default IntegrationForm;
+function dispatch(
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	_arg0: AsyncThunkAction<
+		any,
+		string,
+		{
+			state?: unknown;
+			dispatch?: Dispatch<AnyAction> | undefined;
+			extra?: unknown;
+			rejectValue?: unknown;
+			serializedErrorType?: unknown;
+			pendingMeta?: unknown;
+			fulfilledMeta?: unknown; // 	'https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/smartthings/integrations',
+			// 	'https://us-central1-iconic-star-389300.cloudfunctions.net/soundconductor/smartthings/integrations',
+			// 	{
+			// 		userId,
+			// 		integrationName,
+			// 		signal,
+			// 		actions: {
+			// 			smartthings: {
+			// 				devices
+			// 			}
+			// 		}
+			// 	}
+			// );
+			// console.log('API response:', response.data);
+			// setUserId('');
+			// setIntegrationName('');
+			// setSignal('');
+			// setDevices([
+			// 	{ deviceId: '', state: '' },
+			// 	{ deviceId: '', state: '' }
+			// ]);
+			rejectedMeta?: unknown;
+		}
+	>
+) {
+	throw new Error('Function not implemented.');
+}

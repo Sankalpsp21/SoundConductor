@@ -1,6 +1,8 @@
 # Docker Commands
 
 ```
+npm run build
+
 sudo docker build -t sound-conductor .
 
 sudo docker-compose up --build

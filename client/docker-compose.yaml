@@ -4,4 +4,4 @@ services:
         build: .
         image: sound-conductor
         ports:
-            - '80:80'
+            - '8080:80'
