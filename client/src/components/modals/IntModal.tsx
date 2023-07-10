@@ -1,5 +1,5 @@
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Integration } from '../../lib/types';
 import {
@@ -11,6 +11,11 @@ import { AppDispatch, RootState } from '../../redux/store/index';
 type Device = {
 	deviceId: string;
 	state: string;
+};
+
+type DeviceOption = {
+	id: string;
+	name: string;
 };
 
 const IntModal = () => {
@@ -26,6 +31,20 @@ const IntModal = () => {
 	const dispatch = useDispatch<AppDispatch>();
 	const [signal, setSignal] = useState('clap');
 	const [devices, setDevices] = useState<Device[]>([]);
+	const [deviceOptions, setDeviceOptions] = useState<DeviceOption[]>([]);
+
+	useEffect(() => {
+		// create 5 devices with random id and name
+		const newDevices: DeviceOption[] = [];
+		for (let i = 0; i < 5; i++) {
+			const newDevice: DeviceOption = {
+				id: Math.random().toString(36).substr(2, 9),
+				name: `Device ${i + 1}`
+			};
+			newDevices.push(newDevice);
+		}
+		setDeviceOptions(newDevices);
+	}, []);
 
 	const handleInputChange = (index: number, field: string, value: string) => {
 		const updatedDevices = [...devices];
@@ -40,6 +59,20 @@ const IntModal = () => {
 
 	const handleSubmit = async (e: { preventDefault: () => void }) => {
 		e.preventDefault();
+
+		// for every item in devices
+		devices.forEach((device) => {
+			// if deviceId is empty, set to first one from deviceOptions.id
+			if (device.deviceId === '') {
+				device.deviceId = deviceOptions[0].id;
+			}
+
+			// if state is empty, set to toggle
+			if (device.state === '') {
+				device.state = 'toggle';
+			}
+		});
+
 		const payload: Integration = {
 			userId,
 			integrationName,
@@ -237,7 +270,7 @@ const IntModal = () => {
 													</svg>
 												</button>
 											</div>
-											<input
+											{/* <input
 												type="text"
 												id="deviceId"
 												name="deviceId"
@@ -250,7 +283,35 @@ const IntModal = () => {
 													)
 												}
 												className="border border-gray-300 rounded-md"
-											/>
+											/> */}
+											<select
+												id="deviceId"
+												name="deviceId"
+												value={devices[index].deviceId}
+												onChange={(e) =>
+													handleInputChange(
+														index,
+														'deviceId',
+														e.target.value
+													)
+												}
+												className="border border-gray-300 rounded-md"
+											>
+												{deviceOptions.map(
+													(deviceOption) => (
+														<option
+															key={
+																deviceOption.id
+															}
+															value={
+																deviceOption.id
+															}
+														>
+															{deviceOption.name}
+														</option>
+													)
+												)}
+											</select>
 											<label
 												htmlFor="state"
 												className="font-bold text-blue-500"

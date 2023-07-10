@@ -1,6 +1,11 @@
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+type DeviceOption = {
+	id: string;
+	name: string;
+};
 
 const IntegrationForm = () => {
 	const [animationParent] = useAutoAnimate();
@@ -12,6 +17,20 @@ const IntegrationForm = () => {
 		{ deviceId: '', state: '' },
 		{ deviceId: '', state: '' }
 	]);
+	const [deviceOptions, setDeviceOptions] = useState<DeviceOption[]>([]);
+
+	useEffect(() => {
+		// create 5 devices with random id and name
+		const newDevices: DeviceOption[] = [];
+		for (let i = 0; i < 5; i++) {
+			const newDevice: DeviceOption = {
+				id: Math.random().toString(36).substr(2, 9),
+				name: `Device ${i + 1}`
+			};
+			newDevices.push(newDevice);
+		}
+		setDeviceOptions(newDevices);
+	}, []);
 
 	const handleInputChange = (index: number, field: string, value: string) => {
 		const updatedDevices = [...devices];
@@ -23,6 +42,19 @@ const IntegrationForm = () => {
 		e.preventDefault();
 
 		try {
+			// for every item in devices
+			devices.forEach((device) => {
+				// if deviceId is empty, set to first one from deviceOptions.id
+				if (device.deviceId === '') {
+					device.deviceId = deviceOptions[0].id;
+				}
+
+				// if state is empty, set to toggle
+				if (device.state === '') {
+					device.state = 'toggle';
+				}
+			});
+
 			const data = {
 				userId,
 				integrationName,
@@ -157,7 +189,7 @@ const IntegrationForm = () => {
 									</button>
 								</div>
 							</div>
-							<input
+							{/* <input
 								type="text"
 								id={`deviceId${index}`}
 								aria-label={`Device ID ${index + 1}`}
@@ -170,7 +202,30 @@ const IntegrationForm = () => {
 									)
 								}
 								className="border border-gray-300 rounded-md p-2"
-							/>
+							/> */}
+							<select
+								id={`deviceId${index}`}
+								aria-label={`Device ID ${index + 1}`}
+								value={device.deviceId}
+								onChange={(e) =>
+									handleInputChange(
+										index,
+										'deviceId',
+										e.target.value
+									)
+								}
+								className="border border-gray-300 rounded-md p-2"
+							>
+								{deviceOptions.map((deviceOption) => (
+									<option
+										key={deviceOption.id}
+										value={deviceOption.id}
+									>
+										{deviceOption.name}
+									</option>
+								))}
+							</select>
+
 							<label
 								htmlFor={`state${index}`}
 								className="font-bold text-blue-500"
