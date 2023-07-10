@@ -43,7 +43,7 @@ const Integrations = () => {
 								<IntModal />
 							</div>
 							<div className="flex flex-row justify-center gap-4">
-								<IntegrationGrid integrations={integrations} />
+								{/* <IntegrationGrid integrations={integrations} /> */}
 							</div>
 						</>
 					)}

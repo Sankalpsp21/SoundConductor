@@ -36,9 +36,10 @@ const IntModal = () => {
 
 	useEffect(() => {
 		async function getDevices() {
+			console.log(userId);
 			const smartThingsDevices = await dispatch(getSmartThingsDevices(userId));
 			console.log(smartThingsDevices);
-			
+
 			const devices: DeviceOption[] = [];
 
 			if (smartThingsDevices.payload) {
@@ -145,6 +146,7 @@ const IntModal = () => {
 							Create New Integration
 						</p>
 						<button
+							type="reset"
 							onClick={handleClose}
 							className="btn btn-sm btn-circle btn-ghost ml-auto focus:outline-none"
 						>

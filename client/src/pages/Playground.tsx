@@ -12,7 +12,7 @@ const Playground = () => {
 	const yamnet = useRef<any>(null);
 	const custom = useRef<any>(null);
 	const audioContext = useRef<any>(null);
-	const [label, setLabel] = useState('waiting...');
+	const [label, setLabel] = useState('Preparing Model ...');
 	const [confidence, setConfidence] = useState(0);
 	const location = useLocation();
 
@@ -93,6 +93,7 @@ const Playground = () => {
 				);
 				console.log('Script processor created');
 				console.log(scriptNode);
+				setLabel('Listening ...');
 				scriptNode.onaudioprocess = async (audioProcessingEvent) => {
 					//console.log('Audio processing event');
 					// Get input and output buffer
@@ -115,6 +116,8 @@ const Playground = () => {
 					//const resampledData = resampler.process(inputData);
 
 					//const waveform = new Float32Array(inputData);
+
+					
 
 					if (yamnet.current) {
 						// Make sure that the Yamnet model input shape matches the length of the waveform
