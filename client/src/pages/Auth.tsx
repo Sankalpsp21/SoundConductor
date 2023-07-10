@@ -12,10 +12,9 @@ const Auth = () => {
 
 	useEffect(() => {
 		if (hasUserId) {
-			// keep this navigate to make the page switch look immediate
 			navigate('/integrations');
-			// reload the page when navigating to /integrations so the useEffect gets triggered
-			window.location.href = '/integrations';
+			// trigger a page refresh so the useEffect on that page gets triggered
+			window.location.reload();
 		}
 	}, [hasUserId, navigate]);
 
@@ -47,10 +46,9 @@ const Auth = () => {
 
 		console.log('4');
 
-		// keep this navigate to make the page switch look immediate
 		navigate('/integrations');
-		// reload the page when navigating to /integrations so the useEffect gets triggered
-		window.location.href = '/integrations';
+		// trigger a page refresh so the useEffect on that page gets triggered
+		window.location.reload();
 	};
 
 	return (

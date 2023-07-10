@@ -21,6 +21,8 @@ const Integrations = () => {
 	useEffect(() => {
 		if (!hasUserId) {
 			navigate('/auth');
+			// trigger a page refresh so the useEffect on that page gets triggered
+			window.location.reload();
 		}
 
 		// fix over fetching here by finding out if this is the first mount of the component.
