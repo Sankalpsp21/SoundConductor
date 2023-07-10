@@ -41,7 +41,7 @@ const Auth = () => {
 
 		if (y.payload) {
 			// TODO: set to user id from y.payload
-			dispatch(setUserId('myuserid'));
+			dispatch(setUserId(y.payload._id));
 		}
 
 		console.log('4');

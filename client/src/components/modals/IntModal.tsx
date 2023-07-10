@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Integration } from '../../lib/types';
 import {
 	createIntegration,
+	getSmartThingsDevices,
 	integrationsByUser
 } from '../../redux/slices/Session';
 import { AppDispatch, RootState } from '../../redux/store/index';
@@ -34,16 +35,24 @@ const IntModal = () => {
 	const [deviceOptions, setDeviceOptions] = useState<DeviceOption[]>([]);
 
 	useEffect(() => {
-		// create 5 devices with random id and name
-		const newDevices: DeviceOption[] = [];
-		for (let i = 0; i < 5; i++) {
-			const newDevice: DeviceOption = {
-				id: Math.random().toString(36).substr(2, 9),
-				name: `Device ${i + 1}`
-			};
-			newDevices.push(newDevice);
+		async function getDevices() {
+			const smartThingsDevices = await dispatch(getSmartThingsDevices(userId));
+			console.log(smartThingsDevices);
+			
+			const devices: DeviceOption[] = [];
+
+			if (smartThingsDevices.payload) {
+				smartThingsDevices.payload.devices.forEach((device: any) => {
+					const newDevice: DeviceOption = {
+						id: device.deviceId,
+						name: device.label
+					};
+					devices.push(newDevice);
+				});
+				setDeviceOptions(devices)
+			}
 		}
-		setDeviceOptions(newDevices);
+		getDevices();
 	}, []);
 
 	const handleInputChange = (index: number, field: string, value: string) => {

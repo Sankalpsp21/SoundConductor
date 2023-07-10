@@ -143,6 +143,8 @@ const Playground = () => {
 							yamnetClassMap.current.get(parsedScore) ||
 							'unknown';
 
+						const clapClasses = [56, 461, 400, 410, 436, 461, 466, 488];
+
 						if (score > 0.6 && scoreData != 494) {
 							console.log(
 								`YAMNet class ${yamnetClass} (${scoreData}) with score ${scoresData[0][scoreData]}`
@@ -150,7 +152,7 @@ const Playground = () => {
 							setLabel(yamnetClass);
 							setConfidence(scoresData[0][scoreData]);
 
-							if (custom.current && scoreData == 461) {
+							if (custom.current && clapClasses.includes(parsedScore)) {
 								const customPrediction =
 									custom.current.predict(reshapedWaveform);
 								const customClassWithMaxScore =
@@ -165,16 +167,18 @@ const Playground = () => {
 								console.log(
 									`Custom class ${customScoreData} with score ${customScoreData}`
 								);
+
+								const input: ExecuteIntegration = {
+									userId: user.id,
+									signal: 'clap'
+								};
+
+								console.log(input);
+
+								dispatch(executeIntegration(input));
 							}
 
-							const input: ExecuteIntegration = {
-								userId: user.id,
-								signal: 'clap'
-							};
-
-							console.log(input);
-
-							dispatch(executeIntegration(input));
+						
 						}
 					}
 				};
