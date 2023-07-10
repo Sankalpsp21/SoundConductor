@@ -19,12 +19,14 @@ const createUser = async (body) => {
     token: body.token,
   };
 
+  console.log("OUR TOKEN == ", token);
   try {
     const newUser = new User(token);
     await newUser.save();
     console.log(`New user Data is successfully saved ==: ${newUser._id}`);
     return newUser._id;
   } catch (err) {
+    console.log(err);
     return null;
   }
 };

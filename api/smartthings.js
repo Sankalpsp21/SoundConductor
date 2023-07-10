@@ -19,6 +19,7 @@ router.post("/token", async (req, res, next) => {
     const id = await createUser(body);
     res.status(201).send({ _id: id });
   } catch (err) {
+    console.log(err);
     next();
   }
 });
