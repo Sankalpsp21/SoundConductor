@@ -7,7 +7,7 @@ const IntegrationForm = () => {
 
 	const [userId, setUserId] = useState('');
 	const [integrationName, setIntegrationName] = useState('');
-	const [signal, setSignal] = useState('');
+	const [signal, setSignal] = useState('clap');
 	const [devices, setDevices] = useState([
 		{ deviceId: '', state: '' },
 		{ deviceId: '', state: '' }
@@ -97,13 +97,22 @@ const IntegrationForm = () => {
 					<label htmlFor="signal" className="font-bold text-blue-500">
 						Signal:
 					</label>
-					<input
+					{/* <input
 						type="text"
 						id="signal"
 						value={signal}
 						onChange={(e) => setSignal(e.target.value)}
 						className="border border-gray-300 rounded-md p-2"
-					/>
+					/> */}
+					<select
+						id="signal"
+						name="signal"
+						value={signal}
+						onChange={(e) => setSignal(e.target.value)}
+						className="border border-gray-300 rounded-md"
+					>
+						<option value="clap">Clap</option>
+					</select>
 				</div>
 				<div ref={animationParent} className="flex flex-col space-y-4">
 					{devices.map((device, index) => (
@@ -168,7 +177,7 @@ const IntegrationForm = () => {
 							>
 								State {index + 1}:
 							</label>
-							<input
+							{/* <input
 								type="text"
 								id={`state${index}`}
 								aria-label={`State ${index + 1}`}
@@ -181,7 +190,24 @@ const IntegrationForm = () => {
 									)
 								}
 								className="border border-gray-300 rounded-md p-2"
-							/>
+							/> */}
+							<select
+								id={`state${index}`}
+								aria-label={`State ${index + 1}`}
+								value={device.state}
+								onChange={(e) =>
+									handleInputChange(
+										index,
+										'state',
+										e.target.value
+									)
+								}
+								className="border border-gray-300 rounded-md p-2"
+							>
+								<option value="toggle">Toggle On/Off</option>
+								<option value="on">Turn On</option>
+								<option value="off">Turn Off</option>
+							</select>
 						</div>
 					))}
 				</div>
