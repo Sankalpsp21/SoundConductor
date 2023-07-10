@@ -94,7 +94,7 @@ const Playground = () => {
 				console.log(scriptNode);
 				setLabel('Listening ...');
 
-				// let lastPrintTime = Date.now(); // Initialize last print time with the current time
+				let lastPrintTime = Date.now(); // Initialize last print time with the current time
 
 				scriptNode.onaudioprocess = async (audioProcessingEvent) => {
 					//console.log('Audio processing event');
@@ -147,15 +147,10 @@ const Playground = () => {
 							'unknown';
 
 						const clapClasses = [
-							56, 461, 410, 434, 436, 461, 466, 488
+							56, 461, 410, 434, 436, 461, 466, 488, 498
 						];
 
-						if (score > 0.6 && parsedScore != 494) {
-							// const currentTime = Date.now();
-							// if (currentTime - lastPrintTime >= 1000) {
-							// 	console.log(currentTime - lastPrintTime);
-							// 	lastPrintTime = currentTime;
-
+						if (score >= 0.35 && parsedScore != 494) {
 							console.log(
 								`YAMNet class ${parsedScore} - ${yamnetClass} (${parsedScore}) with score ${scoresData[0][parsedScore]}`
 							);
@@ -185,16 +180,18 @@ const Playground = () => {
 									signal: 'clap'
 								};
 
-								console.log(input);
-								dispatch(executeIntegration(input));
+								const currentTime = Date.now();
+								if (currentTime - lastPrintTime >= 1500) {
+									console.log(currentTime - lastPrintTime);
+									lastPrintTime = currentTime;
+
+									console.log(input);
+
+									dispatch(executeIntegration(input));
+								}
 							}
 							// }
 						}
-
-						// delay 200ms
-						await new Promise((resolve) =>
-							setTimeout(resolve, 200)
-						);
 					}
 				};
 
