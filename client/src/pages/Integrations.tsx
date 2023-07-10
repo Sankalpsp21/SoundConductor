@@ -25,8 +25,12 @@ const Integrations = () => {
 			window.location.reload();
 		}
 
-		// fix over fetching here by finding out if this is the first mount of the component.
-		dispatch(integrationsByUser(user.id));
+		const getIntegrations = async () => {
+			// fix over fetching here by finding out if this is the first mount of the component.
+			const data = await dispatch(integrationsByUser(user.id));
+			console.log(data);
+		};
+		getIntegrations();
 	}, []);
 
 	return (
@@ -43,7 +47,11 @@ const Integrations = () => {
 								<IntModal />
 							</div>
 							<div className="flex flex-row justify-center gap-4">
-								{/* <IntegrationGrid integrations={integrations} /> */}
+								{integrations.length > 0 && (
+									<IntegrationGrid
+										integrations={integrations}
+									/>
+								)}
 							</div>
 						</>
 					)}
