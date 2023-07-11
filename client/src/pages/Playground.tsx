@@ -19,7 +19,7 @@ const Playground = () => {
 	const dispatch: AppDispatch = useDispatch();
 
 	// const yamnetUrl = 'https://tfhub.dev/google/tfjs-model/yamnet/tfjs/1'; // Path to YAMNet model
-	const yamnetUrl = '/tfjs-model_yamnet_tfjs_1/model.json'; // Path to YAMNet model
+	const yamnetUrl = '/yamnet/model.json'; // Path to YAMNet model
 	const modelUrl = '/custom/model.json'; // Path to our custom model
 
 	//const yamnetClassMap = new Map<number, string>();
@@ -143,25 +143,32 @@ const Playground = () => {
 
 						const strScore = `${scoreData}`;
 
-						const parsedScore = parseInt(strScore, 10);
+						const parsedClass = parseInt(strScore, 10);
 
 						const yamnetClass =
-							yamnetClassMap.current.get(parsedScore) ||
+							yamnetClassMap.current.get(parsedClass) ||
 							'unknown';
 
 						const clapClasses = [56, 58, 461, 434, 461, 466, 498];
 
-						if (score >= 0.35 && parsedScore != 494) {
+						if (score >= 0.35 && parsedClass != 494) {
 							console.log(
-								`YAMNet class ${parsedScore} - ${yamnetClass} (${parsedScore}) with score ${scoresData[0][parsedScore]}`
+								`YAMNet class ${parsedClass} - ${yamnetClass} (${parsedClass}) with score ${scoresData[0][parsedClass]}`
 							);
 
 							setLabel(yamnetClass);
-							setConfidence(scoresData[0][parsedScore]);
+							setConfidence(scoresData[0][parsedClass]);
+
+							// if (
+							// 	parsedClass == 498 &&
+							// 	scoresData[0][parsedClass] < 0.4
+							// ) {
+							// 	return;
+							// }
 
 							if (
 								custom.current &&
-								clapClasses.includes(parsedScore)
+								clapClasses.includes(parsedClass)
 							) {
 								setLabel('Clap');
 
@@ -197,7 +204,6 @@ const Playground = () => {
 								}
 								// }
 							}
-							// }
 						}
 					}
 				};

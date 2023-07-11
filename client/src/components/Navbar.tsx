@@ -56,6 +56,7 @@ const Navbar = ({
 						onClick={() => {
 							handleTabClick('');
 							navigate('/');
+							window.location.reload();
 						}}
 					>
 						SoundConductor
@@ -94,6 +95,7 @@ const Navbar = ({
 							persistor.purge();
 							handleTabClick('');
 							navigate('/');
+							window.location.reload();
 						}}
 					>
 						End Session
