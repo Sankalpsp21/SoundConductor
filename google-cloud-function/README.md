@@ -1,4 +1,4 @@
-# SoundConductor
+# Sound Conductor Google Cloud Function API Specification
 
 ## MongoDB Schema
 
