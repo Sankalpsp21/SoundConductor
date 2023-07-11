@@ -1,6 +1,6 @@
 # SoundConductor
 
-## Schema
+## MongoDB Schema
 
 ### Users Collection
 
