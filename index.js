@@ -6,7 +6,7 @@ const morgan = require("morgan");
 const api = require("./api");
 const app = express();
 const PORT = process.env.PORT || 8000;
-const mongoURI = process.env.MONGO_URI;
+const mongoURI = process.env.MONGO_URL;
 const cors = require("cors");
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
