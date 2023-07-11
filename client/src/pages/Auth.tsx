@@ -21,15 +21,20 @@ const Auth = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		console.log('asdf');
+		if (!token) {
+			return;
+		}
 
-		if (!token || token.length === 0) {
+		// trim token
+		const tokenValue = token.trim();
+
+		if (tokenValue.length === 0) {
 			return;
 		}
 
 		console.log('1');
 
-		const y = await dispatch(createNewUser(token));
+		const y = await dispatch(createNewUser(tokenValue));
 
 		console.log('2');
 
@@ -40,7 +45,7 @@ const Auth = () => {
 		console.log('3');
 
 		if (y.payload) {
-			// TODO: set to user id from y.payload
+			// set to user id from y.payload
 			dispatch(setUserId(y.payload._id));
 		}
 
@@ -56,10 +61,26 @@ const Auth = () => {
 			<div className="hero min-h-screen">
 				<div className="hero-content flex-col lg:flex-row-reverse p-48">
 					<div className="text-center lg:text-left m-12">
-						<h1 className="text-5xl font-bold">
+						<h1 className="text-5xl font-bolds">
 							Begin Your Journey with SoundConductor
 						</h1>
-						<p className="py-6">Put instructions here</p>
+						<p className="py-6">
+							Please go to the{' '}
+							<u>
+								<a
+									href="https://account.smartthings.com/tokens"
+									target="_blank"
+									style={{ color: 'blue' }}
+								>
+									SmartThings token page
+								</a>
+							</u>{' '}
+							to get your personal access token to interact with
+							SmartThings device. When you create a token, make
+							sure to enable the checkbox for "Devices" for
+							Authorized Scopes. Then copy and paste the token
+							here.
+						</p>
 					</div>
 					<div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
 						<div className="card-body">

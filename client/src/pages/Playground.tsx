@@ -12,13 +12,15 @@ const Playground = () => {
 	const yamnet = useRef<any>(null);
 	const custom = useRef<any>(null);
 	const audioContext = useRef<any>(null);
-	const [label, setLabel] = useState('Preparing Model ...');
+	const [label, setLabel] = useState('Preparing model. Please wait...');
 	const [confidence, setConfidence] = useState(0);
+	const currentlySending = useRef<boolean>(false);
 
 	const dispatch: AppDispatch = useDispatch();
 
-	const yamnetUrl = 'https://tfhub.dev/google/tfjs-model/yamnet/tfjs/1'; // Path to YAMNet model
-	const modelUrl = '/model.json'; // Path to our custom model
+	// const yamnetUrl = 'https://tfhub.dev/google/tfjs-model/yamnet/tfjs/1'; // Path to YAMNet model
+	const yamnetUrl = '/tfjs-model_yamnet_tfjs_1/model.json'; // Path to YAMNet model
+	const modelUrl = '/custom/model.json'; // Path to our custom model
 
 	//const yamnetClassMap = new Map<number, string>();
 	const yamnetClassMap = useRef<Map<number, string>>(
@@ -60,10 +62,12 @@ const Playground = () => {
 			//console.log(yamnetClassMap.current.get(0) || 'unknown');
 
 			async function loadYAMNetModel() {
-				yamnet.current = await tf.loadGraphModel(yamnetUrl, {
-					fromTFHub: true
-				});
+				// yamnet.current = await tf.loadGraphModel(yamnetUrl, {
+				// 	fromTFHub: true
+				// });
+				yamnet.current = await tf.loadGraphModel(yamnetUrl);
 				console.log('YAMNet model loaded');
+				setLabel('Listening ...');
 			}
 			loadYAMNetModel();
 
@@ -92,9 +96,8 @@ const Playground = () => {
 				);
 				console.log('Script processor created');
 				console.log(scriptNode);
-				setLabel('Listening ...');
 
-				let lastPrintTime = Date.now(); // Initialize last print time with the current time
+				// let lastPrintTime = Date.now(); // Initialize last print time with the current time
 
 				scriptNode.onaudioprocess = async (audioProcessingEvent) => {
 					//console.log('Audio processing event');
@@ -146,9 +149,7 @@ const Playground = () => {
 							yamnetClassMap.current.get(parsedScore) ||
 							'unknown';
 
-						const clapClasses = [
-							56, 461, 410, 434, 436, 461, 466, 488, 498
-						];
+						const clapClasses = [56, 58, 461, 434, 461, 466, 498];
 
 						if (score >= 0.35 && parsedScore != 494) {
 							console.log(
@@ -162,6 +163,8 @@ const Playground = () => {
 								custom.current &&
 								clapClasses.includes(parsedScore)
 							) {
+								setLabel('Clap');
+
 								const customPrediction =
 									custom.current.predict(reshapedWaveform);
 								const customClassWithMaxScore =
@@ -180,15 +183,19 @@ const Playground = () => {
 									signal: 'clap'
 								};
 
-								const currentTime = Date.now();
-								if (currentTime - lastPrintTime >= 1500) {
-									console.log(currentTime - lastPrintTime);
-									lastPrintTime = currentTime;
+								// const currentTime = Date.now();
+								// if (currentTime - lastPrintTime >= 1500) {
+								// console.log(currentTime - lastPrintTime);
+								// lastPrintTime = currentTime;
+
+								if (!currentlySending.current) {
+									currentlySending.current = true;
 
 									console.log(input);
-
-									dispatch(executeIntegration(input));
+									await dispatch(executeIntegration(input));
+									currentlySending.current = false;
 								}
+								// }
 							}
 							// }
 						}
@@ -211,7 +218,9 @@ const Playground = () => {
 
 			<div className="flex flex-col items-center justify-center">
 				<h1 className="text-5xl font-bold my-16">{label}</h1>
-				<h1 className="text-5xl font-bold my-16">{confidence}</h1>
+				<h1 className="text-5xl font-bold my-16">
+					{Math.round(confidence * 100)}% Confidence
+				</h1>
 			</div>
 		</div>
 	);
