@@ -317,3 +317,11 @@
 	signal: STRING
 }
 ```
+
+**Status Code Table**
+
+| Status Code | Description           |
+| ----------- | --------------------- |
+| 201         | Success               |
+| 400         | Invalid Body          |
+| 500         | Internal Server error |

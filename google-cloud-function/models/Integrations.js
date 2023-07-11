@@ -3,7 +3,7 @@ const { ObjectId } = mongoose.Types;
 const joi = require("joi");
 
 const db = mongoose.connection.useDb("AtlasMadness");
-const { updateSmartThingsDeviceState } = require("../lib/smartthings.js");
+const { updateSmartThingsDeviceState } = require("../lib/smartthings");
 
 const integrationsSchema = new mongoose.Schema({
   userId: {
@@ -42,14 +42,12 @@ const integrationValidSchema = joi.object({
   signal: joi.string().required(),
   actions: joi.object({
     smartthings: joi.object({
-      devices: joi
-        .array()
-        .items(
-          joi.object({
-            deviceId: joi.string().required(),
-            state: joi.string().required(),
-          })
-        ),
+      devices: joi.array().items(
+        joi.object({
+          deviceId: joi.string().required(),
+          state: joi.string().required(),
+        })
+      ),
     }),
   }),
 });
@@ -140,7 +138,11 @@ const updateIntegration = async (body, id) => {
     if (!integration) {
       return false;
     }
-    if (integration.actions.smartthings.devices && !body.integrationName && !body.signal) { 
+    if (
+      integration.actions.smartthings.devices &&
+      !body.integrationName &&
+      !body.signal
+    ) {
       integration.actions.smartthings.devices.push(
         body.actions.smartthings.devices[0]
       );

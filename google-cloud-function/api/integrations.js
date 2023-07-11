@@ -5,14 +5,13 @@ const {
   integrationValidSchema,
   createIntegration,
   readAllIntegrationsByUserId,
-  readIntegrationById,
   readIntegrationsBySignal,
   updateIntegration,
   deleteIntegration,
   executeIntegrations,
-} = require("../models/Integrations.js");
+} = require("../models/Integrations");
 
-const { readUserById } = require("../models/user.js");
+const { readUserById } = require("../models/user");
 const router = Router();
 
 /*

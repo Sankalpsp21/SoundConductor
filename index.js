@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-const api = require("./api");
+const api = require("./google-cloud-function/api");
 const app = express();
 const PORT = process.env.PORT || 8000;
 const mongoURI = process.env.MONGO_URL;
